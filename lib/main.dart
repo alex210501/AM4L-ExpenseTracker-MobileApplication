@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 
-import './screens/create_user_screen.dart';
-import './screens/login_screen.dart';
+
+import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
+import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  ExpensesTrackerApi expensesTrackerApi = ExpensesTrackerApi();
+
+  MyApp({super.key});
 
   // This widget is the root of your application.
   @override

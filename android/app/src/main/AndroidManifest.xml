@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.am4l_expensetracker_mobileapplication">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
         android:label="am4l_expensetracker_mobileapplication"
+        android:usesCleartextTraffic="true"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

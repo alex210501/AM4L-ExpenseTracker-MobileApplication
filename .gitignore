@@ -22,3 +22,5 @@ doc/api/
 
 # Android studio folder
 .idea/
+
+assets/configs

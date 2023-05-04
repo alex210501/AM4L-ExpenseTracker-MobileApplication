@@ -1,21 +1,21 @@
-import 'package:am4l_expensetracker_mobileapplication/models/api_config.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
-import 'package:am4l_expensetracker_mobileapplication/modules/file_manager.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/user_api.dart';
 
 const hostUri = 'https://alejandro-borbolla.com/expensestracker';
 const authenticationPath = 'auth';
 const loginPath = '$authenticationPath/login';
 const logoutPath = '$authenticationPath/logout';
-const appJsonHeader = {"Content-Type": "application/json"};
+Map<String, String> appJsonHeader = {"Content-Type": "application/json"};
 
 /// Class that manage the API communication
 class ExpensesTrackerApi {
   String token = '';
   final String uri = hostUri;
+  final userApi = UserApi(uri: hostUri, appJsonHeader: appJsonHeader);
 
   /// Login to the API, return a token
-  void login(String username, String password) {
+  Future<void> login(String username, String password) async {
     final body = {
       'username': username,
       'password': password,
@@ -28,7 +28,12 @@ class ExpensesTrackerApi {
         headers: appJsonHeader,
     );
 
-    sendHttpRequest(apiRequest).then((content) {token = content['token'] as  String; print(token);}).catchError((err) => print(err));
+    // Make HTTP request
+    Map<String, dynamic> response = await sendHttpRequest(apiRequest);
+
+    // Get token from response
+    token = response['token'] as  String;
+    appJsonHeader['Authorization'] = getTokenHeader(token);
   }
 
   /// Logout from the API
@@ -36,7 +41,7 @@ class ExpensesTrackerApi {
     ApiRequest apiRequest = ApiRequest(
         uri: '$uri/$logoutPath',
         method: HttpMethod.post,
-        headers: {'Authorization': getTokenHeader(token), ...appJsonHeader },
+        headers: appJsonHeader,
     );
     
     sendHttpRequest(apiRequest).then((_) => token = '');

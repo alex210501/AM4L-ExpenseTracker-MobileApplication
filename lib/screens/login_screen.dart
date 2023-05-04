@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final ExpensesTrackerApi expensesTrackerApi;
+
+  const LoginScreen({super.key, required this.expensesTrackerApi});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -10,6 +14,20 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  /// Forms controller
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  _login(BuildContext context) {
+    /// Get username and password from controller
+    final username = _usernameController.text;
+    final password = _passwordController.text;
+
+    /// Make API request to login
+    widget.expensesTrackerApi.login(username, password)
+      .then((_) => print('Logged In!'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: const InputDecoration(
                   hintText: "Username"
               ),
+              controller: _usernameController,
               validator: (text) {
                 return (text == null || text.isEmpty) ? "Username must be filled!" : null;
               },
@@ -34,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: const InputDecoration(
                   hintText: "Password",
               ),
+              controller: _passwordController,
               obscureText: true,
               validator: (text) {
                 return (text == null || text.isEmpty) ? "Password must be filled!" : null;
@@ -46,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text("Sign up"),
                 ),
                 ElevatedButton(
-                    onPressed: () => print("Connect"),
+                    onPressed: () => _login(context),
                     child: const Text("Connect"),
                 ),
               ],

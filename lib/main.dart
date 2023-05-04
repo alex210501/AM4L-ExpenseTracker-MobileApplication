@@ -23,11 +23,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const LoginScreen(),
         initialRoute: '/login',
         routes: {
-          '/login': (context) => const LoginScreen(),
-          '/create-user': (context) => const CreateUserScreen(),
+          '/login': (context) => LoginScreen(expensesTrackerApi: expensesTrackerApi),
+          '/create-user': (context) => CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
         });
   }
 }

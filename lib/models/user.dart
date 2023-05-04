@@ -8,11 +8,22 @@ class User {
       {required this.username,
       required this.firstname,
       required this.lastname,
-      required this.email});
+      required this.email });
 
-  User.fromJson(Map<String, String> jsonData)
-      : username = jsonData['username'] ?? '',
-        firstname = jsonData['firstname'] ?? '',
-        lastname = jsonData['lastname'] ?? '',
-        email = jsonData['email'] ?? '';
+  /// Create User from JSON
+  User.fromJson(Map<String, dynamic> jsonData)
+      : username = jsonData['user_username'] ?? '',
+        firstname = jsonData['user_firstname'] ?? '',
+        lastname = jsonData['user_lastname'] ?? '',
+        email = jsonData['user_email'] ?? '';
+
+  /// Create JSON from User
+  Map<String, dynamic> toJson() {
+    return {
+      'user_username': username,
+      'user_firstname': firstname,
+      'user_lastname': lastname,
+      'user_email': email,
+    };
+  }
 }

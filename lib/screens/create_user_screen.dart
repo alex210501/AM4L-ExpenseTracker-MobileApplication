@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/user.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+
+
 class CreateUserScreen extends StatefulWidget {
-  const CreateUserScreen({super.key});
+  final ExpensesTrackerApi expensesTrackerApi;
+
+  const CreateUserScreen({super.key, required this.expensesTrackerApi});
 
   @override
   State<CreateUserScreen> createState() => _CreateUserScreenState();
@@ -9,6 +15,15 @@ class CreateUserScreen extends StatefulWidget {
 
 class _CreateUserScreenState extends State<CreateUserScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  /// Create User
+  _createUser(BuildContext context) {
+    User user = User(username: '4', firstname: '2', lastname: '2', email: '2');
+
+    widget.expensesTrackerApi.userApi.createUser(user, 'yop')
+        .then((_) => Navigator.pushNamed(context, '/login'))
+        .catchError((error) => print(error));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +84,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                     child: const Text("Sign in"),
                   ),
                   ElevatedButton(
-                    onPressed: () => print("Create"),
+                    onPressed: () => _createUser(context),
                     child: const Text("Create"),
                   )
                 ],

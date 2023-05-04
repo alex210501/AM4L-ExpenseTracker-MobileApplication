@@ -12,10 +12,14 @@ class Space {
       required this.admin,
       required this.collaborators});
 
+  /// Construct Space from JSON
   Space.fromJson(Map<String, dynamic> jsonData)
-      : id = jsonData['id'] ?? '',
-        name = jsonData['name'] ?? '',
-        description = jsonData['description'] ?? '',
-        admin = jsonData['admin'] ?? '',
-        collaborators = jsonData['collaborators'] ?? <String>[];
+      : id = jsonData['space_id'] ?? '',
+        name = jsonData['space_name'] ?? '',
+        description = jsonData['space_description'] ?? '',
+        admin = jsonData['space_admin'] ?? '',
+        collaborators = (jsonData['space_collaborators'] ?? []).cast<String>();
+
+  /// Construct JSON from Space
+
 }

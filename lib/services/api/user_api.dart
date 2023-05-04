@@ -27,7 +27,7 @@ class UserApi {
     );
 
     // Get answer from HTTP request
-    Map<String, dynamic> response = await sendHttpRequest(apiRequest);
+    Map<dynamic, dynamic> response = await sendHttpRequest(apiRequest);
 
     return User.fromJson(response);
   }

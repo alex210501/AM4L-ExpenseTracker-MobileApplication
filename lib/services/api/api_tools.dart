@@ -7,7 +7,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
 
 
 /// Send http request and throw error if status code is not 200
-Future<Map<String, dynamic>> sendHttpRequest(ApiRequest apiRequest) async {
+Future<dynamic> sendHttpRequest(ApiRequest apiRequest) async {
   ApiResponse response = ApiResponse.fromHttpResponse(await _makeRequest(apiRequest));
 
   // Check the status code

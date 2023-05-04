@@ -11,7 +11,7 @@ class User {
       required this.email });
 
   /// Create User from JSON
-  User.fromJson(Map<String, dynamic> jsonData)
+  User.fromJson(Map<dynamic, dynamic> jsonData)
       : username = jsonData['user_username'] ?? '',
         firstname = jsonData['user_firstname'] ?? '',
         lastname = jsonData['user_lastname'] ?? '',

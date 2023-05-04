@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     /// Make API request to login
     widget.expensesTrackerApi.login(username, password)
-      .then((_) => print('Logged In!'));
+      .then((_) => Navigator.pushNamed(context, '/space'));
   }
 
   @override

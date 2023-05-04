@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
+import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 
 void main() {
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (context) => LoginScreen(expensesTrackerApi: expensesTrackerApi),
           '/create-user': (context) => CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
+          '/space': (context) => SpacesScreen(expensesTrackerApi: expensesTrackerApi),
         });
   }
 }

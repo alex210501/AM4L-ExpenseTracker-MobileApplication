@@ -2,6 +2,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/space_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/user_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/user_space_api.dart';
 
 const hostUri = 'https://alejandro-borbolla.com/expensestracker';
 const authenticationPath = 'auth';
@@ -15,6 +16,7 @@ class ExpensesTrackerApi {
   final String uri = hostUri;
   final spaceApi = SpaceApi(uri: hostUri, appJsonHeader: appJsonHeader);
   final userApi = UserApi(uri: hostUri, appJsonHeader: appJsonHeader);
+  final userSpaceApi = UserSpaceApi(uri: hostUri, appJsonHeader: appJsonHeader);
 
   /// Login to the API, return a token
   Future<void> login(String username, String password) async {

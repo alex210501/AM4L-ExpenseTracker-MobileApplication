@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
+  final ExpensesTrackerApi expensesTrackerApi;
+
   /// Default constructor
-  const SpaceInformationScreen({super.key});
+  const SpaceInformationScreen({super.key, required this.expensesTrackerApi});
 
   @override
   State<SpaceInformationScreen> createState() => _SpaceInformationScreenState();
@@ -26,6 +29,24 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     }
   }
 
+  /// Add a collaborator to a space
+  _addCollaboratorToSpace(BuildContext context, String spaceId, String collaborator) {
+    widget.expensesTrackerApi.userSpaceApi.addUser(spaceId, collaborator)
+        .then((_) {
+          space.collaborators.add(collaborator);
+          setState(() {});
+        });
+  }
+
+  /// Delete a collaborator from a space
+  _deleteCollaboratorFromSpace(BuildContext context, String spaceId, String collaborator) {
+    widget.expensesTrackerApi.userSpaceApi.deleteUser(spaceId, collaborator)
+        .then((_) {
+          space.collaborators.remove(collaborator);
+          setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     _loadSpaceFromRouteArgument(context);
@@ -41,8 +62,8 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
             Text('Description: ${space.description}'),
             _ListViewCollaborator(
               space: space,
-              onDeleteCollaborator: (_, __) => print('delete'),
-              onAddCollaborator: (_, val) => print(val),
+              onDeleteCollaborator: _deleteCollaboratorFromSpace,
+              onAddCollaborator: _addCollaboratorToSpace,
             )
           ],
         ),
@@ -54,8 +75,8 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 @immutable
 class _ListViewCollaborator extends StatelessWidget {
   final Space space;
-  final void Function(String, String) onDeleteCollaborator;
-  final void Function(String, String) onAddCollaborator;
+  final void Function(BuildContext, String, String) onDeleteCollaborator;
+  final void Function(BuildContext, String, String) onAddCollaborator;
 
   /// Default constructor
   _ListViewCollaborator({
@@ -98,7 +119,7 @@ class _ListViewCollaborator extends StatelessWidget {
 
 class _AddCollaboratorTile extends StatelessWidget {
   final Space space;
-  final void Function(String, String) onAdd;
+  final void Function(BuildContext, String, String) onAdd;
   final TextEditingController _userToAddController = TextEditingController();
 
 
@@ -116,7 +137,7 @@ class _AddCollaboratorTile extends StatelessWidget {
         controller: _userToAddController,
       ),
       trailing: IconButton(
-        onPressed: () => onAdd(space.id, _userToAddController.text),
+        onPressed: () => onAdd(context, space.id, _userToAddController.text),
         icon: const Icon(Icons.add),
       ),
     );

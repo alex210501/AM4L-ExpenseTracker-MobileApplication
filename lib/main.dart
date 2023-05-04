@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginScreen(expensesTrackerApi: expensesTrackerApi),
           '/create-user': (context) => CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
           '/space': (context) => SpacesScreen(expensesTrackerApi: expensesTrackerApi),
-          '/space/info': (context) => SpaceInformationScreen(),
+          '/space/info': (context) => SpaceInformationScreen(expensesTrackerApi: expensesTrackerApi),
         });
   }
 }

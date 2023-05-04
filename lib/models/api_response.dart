@@ -10,7 +10,13 @@ class ApiResponse {
 
   ApiResponse.fromHttpResponse(http.Response response) {
     statusCode = response.statusCode;
-    content = jsonDecode(response.body);
+
+    // Decode JSON content
+    try {
+      content = jsonDecode(response.body);
+    } catch(_) {
+      content = <dynamic, dynamic>{};
+    }
   }
 
   bool isOk() => (statusCode / 100) == 2;

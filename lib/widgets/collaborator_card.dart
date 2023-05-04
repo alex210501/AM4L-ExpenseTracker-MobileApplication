@@ -5,7 +5,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 class CollaboratorCard extends StatelessWidget {
   final Space space;
   final String collaborator;
-  final void Function(String, String) onDelete;
+  final void Function(BuildContext, String, String) onDelete;
 
   /// Default constructor
   const CollaboratorCard({
@@ -21,7 +21,11 @@ class CollaboratorCard extends StatelessWidget {
       child: ListTile(
         title: Text(collaborator),
         trailing: IconButton(
-          onPressed: () => onDelete(space.id, collaborator),
+          onPressed: () => onDelete(
+              context,
+              space.id,
+              collaborator
+          ),
           icon: const Icon(Icons.delete),
         ),
       ),

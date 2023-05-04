@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/space_information_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginScreen(expensesTrackerApi: expensesTrackerApi),
           '/create-user': (context) => CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
           '/space': (context) => SpacesScreen(expensesTrackerApi: expensesTrackerApi),
+          '/space/info': (context) => SpaceInformationScreen(),
         });
   }
 }

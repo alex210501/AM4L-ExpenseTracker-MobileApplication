@@ -63,6 +63,10 @@ class _SpaceListView extends StatefulWidget {
 }
 
 class _SpaceListViewState extends State<_SpaceListView> {
+  _goToSpaceInfo(BuildContext context, Space space) {
+    Navigator.pushNamed(context, '/space/info', arguments: space);
+  }
+
   @override
   Widget build(BuildContext context) {
     final spaces = widget.spaces;
@@ -88,6 +92,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
                           ),
                         ],
                       ),
+                    onTap: () => _goToSpaceInfo(context, spaces[index]),
                   ),
               );
         }

@@ -12,6 +12,14 @@ class Space {
       required this.admin,
       required this.collaborators});
 
+  /// Constructor with default values
+  Space.defaultValue()
+      : id = '',
+        name = '',
+        description = '',
+        admin = '',
+        collaborators = [];
+
   /// Construct Space from JSON
   Space.fromJson(Map<String, dynamic> jsonData)
       : id = jsonData['space_id'] ?? '',

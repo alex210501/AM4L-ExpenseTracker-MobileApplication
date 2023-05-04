@@ -29,4 +29,16 @@ class SpaceApi {
       .map((value) => Space.fromJson(value as Map<String, dynamic>))
       .toList();
   }
+
+  /// Delete space from API
+  Future<void> deleteSpace(String spaceId) async {
+    ApiRequest apiRequest = ApiRequest(
+        uri: '$uri/$spacePath/$spaceId',
+        method: HttpMethod.delete,
+        headers: appJsonHeader,
+    );
+
+    // Send HTTP request
+    await sendHttpRequest(apiRequest);
+  }
 }

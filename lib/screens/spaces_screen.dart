@@ -17,17 +17,29 @@ class _SpacesScreenState extends State<SpacesScreen> {
     return await widget.expensesTrackerApi.spaceApi.getSpaces();
   }
 
+  _deleteSpace(Space space) {
+    widget.expensesTrackerApi.spaceApi.deleteSpace(space.id)
+        .then((_) => setState(() {}));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Spaces'),),
+      floatingActionButton: IconButton(
+        onPressed: () => print('Add'),
+        icon: const Icon(Icons.add),
+      ),
       body: FutureBuilder<List<Space>>(
           future: _getSpaces(),
           builder: (BuildContext context, AsyncSnapshot<List<Space>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             } else if (snapshot.connectionState == ConnectionState.done) {
-              return _SpaceListView(spaces: snapshot.data ?? []);
+              return _SpaceListView(
+                  spaces: snapshot.data ?? [],
+                  onDelete: _deleteSpace,
+              );
             }
 
             return const Center(child: Text('Empty Data'));
@@ -38,8 +50,13 @@ class _SpacesScreenState extends State<SpacesScreen> {
 @immutable
 class _SpaceListView extends StatefulWidget {
   final List<Space> spaces;
+  final void Function(Space) onDelete;
 
-  const _SpaceListView({super.key, required this.spaces});
+  const _SpaceListView({
+    super.key,
+    required this.spaces,
+    required this.onDelete,
+  });
 
   @override
   State<_SpaceListView> createState() => _SpaceListViewState();
@@ -66,7 +83,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
                               icon: const Icon(Icons.edit),
                           ),
                           IconButton(
-                              onPressed: () => print('Delete'),
+                              onPressed: () => widget.onDelete(spaces[index]),
                               icon: const Icon(Icons.delete)
                           ),
                         ],

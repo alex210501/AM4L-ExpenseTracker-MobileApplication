@@ -19,7 +19,4 @@ class Space {
         description = jsonData['space_description'] ?? '',
         admin = jsonData['space_admin'] ?? '',
         collaborators = (jsonData['space_collaborators'] ?? []).cast<String>();
-
-  /// Construct JSON from Space
-
 }

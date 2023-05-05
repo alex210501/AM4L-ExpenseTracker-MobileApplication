@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/user.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 
-
 class CreateUserScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
 
@@ -14,15 +13,17 @@ class CreateUserScreen extends StatefulWidget {
 }
 
 class _CreateUserScreenState extends State<CreateUserScreen> {
-  final _formKey = GlobalKey<FormState>();
-
   /// Create User
-  _createUser(BuildContext context) {
-    User user = User(username: '4', firstname: '2', lastname: '2', email: '2');
-
-    widget.expensesTrackerApi.userApi.createUser(user, 'yop')
+  _createUser(BuildContext context, User user, String password) {
+    widget.expensesTrackerApi.userApi
+        .createUser(user, 'yop')
         .then((_) => Navigator.pushNamed(context, '/login'))
         .catchError((error) => print(error));
+  }
+
+  /// On Sign In action
+  _onSignIn(BuildContext context) {
+    Navigator.pushNamed(context, '/login');
   }
 
   @override
@@ -32,66 +33,149 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         title: const Text("Create User"),
       ),
       body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
+        child: _SignUpForm(
+          onCreate: _createUser,
+          onSignIn: _onSignIn,
+        ),
+      ),
+    );
+  }
+}
+
+class _SignUpForm extends StatefulWidget {
+  final void Function(BuildContext, User, String) onCreate;
+  final void Function(BuildContext) onSignIn;
+
+  const _SignUpForm(
+      {super.key, required this.onCreate, required this.onSignIn});
+
+  @override
+  State<_SignUpForm> createState() => _SignUpFormState();
+}
+
+class _SignUpFormState extends State<_SignUpForm> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  void _onCreate(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      User user = User(
+        username: _usernameController.text,
+        firstname: _firstnameController.text,
+        lastname: _lastnameController.text,
+        email: _emailController.text,
+      );
+      String password = _passwordController.text;
+
+      // Call the super onCreate
+      widget.onCreate(context, user, password);
+    }
+  }
+
+  @override
+  void dispose() {
+    // Clear ressources used by TextEditingController
+    _usernameController.dispose();
+    _firstnameController.dispose();
+    _lastnameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          TextFormField(
+            controller: _usernameController,
+            decoration: const InputDecoration(hintText: "Username"),
+            validator: (text) {
+              return (text == null || text.isEmpty)
+                  ? "Username must be filled!"
+                  : null;
+            },
+          ),
+          TextFormField(
+            controller: _firstnameController,
+            decoration: const InputDecoration(hintText: "Firstname"),
+            validator: (text) {
+              return (text == null || text.isEmpty)
+                  ? "Firstname must be filled!"
+                  : null;
+            },
+          ),
+          TextFormField(
+            controller: _lastnameController,
+            decoration: const InputDecoration(hintText: "Lastname"),
+            validator: (text) {
+              return (text == null || text.isEmpty)
+                  ? "Lastname must be filled!"
+                  : null;
+            },
+          ),
+          TextFormField(
+            controller: _emailController,
+            decoration: const InputDecoration(hintText: "Email"),
+            validator: (text) {
+              if (text == null || text.isEmpty) {
+                return "Username must be filled!";
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            controller: _passwordController,
+            decoration: const InputDecoration(hintText: "Password"),
+            obscureText: true,
+            validator: (text) {
+              return (text == null || text.isEmpty)
+                  ? "Password must be filled!"
+                  : null;
+            },
+          ),
+          TextFormField(
+            controller: _confirmPasswordController,
+            decoration: const InputDecoration(hintText: "Retype password"),
+            obscureText: true,
+            validator: (text) {
+              final password = _passwordController.text;
+              final confirPassword = _confirmPasswordController.text;
+
+              if (text == null || text.isEmpty) {
+                return "Password must be filled!";
+              }
+
+              if (password != confirPassword) {
+                return "Passwords must match!";
+              }
+
+              return null;
+            },
+          ),
+          Row(
             children: [
-              TextFormField(
-                decoration: const InputDecoration(hintText: "Username"),
-                validator: (text) {
-                  return (text == null || text.isEmpty) ? "Username must be filled!" : null;
-                },
+              ElevatedButton(
+                onPressed: () => widget.onSignIn(context),
+                child: const Text("Sign in"),
               ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: "Firstname"),
-                validator: (text) {
-                  return (text == null || text.isEmpty) ? "Firstname must be filled!" : null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: "Lastname"),
-                validator: (text) {
-                  return (text == null || text.isEmpty) ? "Lastname must be filled!" : null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: "Email"),
-                validator: (text) {
-                  if (text == null || text.isEmpty) {
-                    return "Username must be filled!";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: "Password"),
-                obscureText: true,
-                validator: (text) {
-                  return (text == null || text.isEmpty) ? "Password must be filled!" : null;
-                },
-              ),
-              TextFormField(
-                decoration: const InputDecoration(hintText: "Retype password"),
-                obscureText: true,
-                validator: (text) {
-                  return (text == null || text.isEmpty) ? "Password must be filled!" : null;
-                },
-              ),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, '/login'),
-                    child: const Text("Sign in"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _createUser(context),
-                    child: const Text("Create"),
-                  )
-                ],
-              ),
+              ElevatedButton(
+                onPressed: () => _onCreate(context),
+                child: const Text("Create"),
+              )
             ],
           ),
-        ),
+        ],
       ),
     );
   }

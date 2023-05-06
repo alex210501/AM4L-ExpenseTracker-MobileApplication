@@ -15,7 +15,10 @@ class SpaceInformationScreen extends StatefulWidget {
 }
 
 class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
-  late Space space;
+  bool isNewSpace = false;
+  late Space _space;
+  late TextEditingController _descriptionController;
+  late TextEditingController _nameController;
 
   /// Load space from the route argument
   _loadSpaceFromRouteArgument(BuildContext context) {
@@ -23,27 +26,53 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
     // If the space is not passed to the function, go back to the last screen
     if (spaceArg == null) {
-      Navigator.pop(context);
+      isNewSpace = true;
+      _space = Space.defaultValue();
     } else {
-      space = spaceArg as Space;
+      isNewSpace = false;
+      _space = spaceArg as Space;
+    }
+
+    // Initialise controllers
+    _descriptionController = TextEditingController(text: _space.description);
+    _nameController = TextEditingController(text: _space.name);
+  }
+
+  /// Save space
+  _saveSpace(BuildContext context) {
+    // Load data from input into space
+    _space.name = _nameController.text;
+    _space.description = _descriptionController.text;
+
+    // Create or update the space
+    if (isNewSpace) {
+      widget.expensesTrackerApi.spaceApi
+          .createSpace(_space)
+          .then((_) => Navigator.pop(context));
+    } else {
+      widget.expensesTrackerApi.spaceApi.updateSpace(_space);
     }
   }
 
   /// Add a collaborator to a space
-  _addCollaboratorToSpace(BuildContext context, String spaceId, String collaborator) {
-    widget.expensesTrackerApi.userSpaceApi.addUser(spaceId, collaborator)
+  _addCollaboratorToSpace(
+      BuildContext context, String spaceId, String collaborator) {
+    widget.expensesTrackerApi.userSpaceApi
+        .addUser(spaceId, collaborator)
         .then((_) {
-          space.collaborators.add(collaborator);
-          setState(() {});
-        });
+      _space.collaborators.add(collaborator);
+      setState(() {});
+    });
   }
 
   /// Delete a collaborator from a space
-  _deleteCollaboratorFromSpace(BuildContext context, String spaceId, String collaborator) {
-    widget.expensesTrackerApi.userSpaceApi.deleteUser(spaceId, collaborator)
+  _deleteCollaboratorFromSpace(
+      BuildContext context, String spaceId, String collaborator) {
+    widget.expensesTrackerApi.userSpaceApi
+        .deleteUser(spaceId, collaborator)
         .then((_) {
-          space.collaborators.remove(collaborator);
-          setState(() {});
+      _space.collaborators.remove(collaborator);
+      setState(() {});
     });
   }
 
@@ -53,21 +82,64 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(space.name),
+        title: const Text("Space"),
+        actions: [
+          TextButton(
+            onPressed: () => _saveSpace(context),
+            child: const Text(
+              'Save',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           children: [
-            Text('ID: ${space.id}'),
-            Text('Description: ${space.description}'),
+            !isNewSpace ? Text('ID: ${_space.id}') : Container(),
+            _SpaceInfoTextForm(
+              title: 'Name',
+              controller: _nameController,
+            ),
+            _SpaceInfoTextForm(
+              title: 'Description',
+              controller: _descriptionController,
+            ),
             _ListViewCollaborator(
-              space: space,
+              space: _space,
               onDeleteCollaborator: _deleteCollaboratorFromSpace,
               onAddCollaborator: _addCollaboratorToSpace,
             )
           ],
         ),
       ),
+    );
+  }
+}
+
+@immutable
+class _SpaceInfoTextForm extends StatelessWidget {
+  final String title;
+  final TextEditingController controller;
+  final String? Function(String?)? validator;
+
+  const _SpaceInfoTextForm(
+      {required this.title, required this.controller, this.validator});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(title),
+        const Spacer(),
+        Expanded(
+          flex: 7,
+          child: TextFormField(
+            controller: controller,
+            validator: validator,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -80,7 +152,6 @@ class _ListViewCollaborator extends StatelessWidget {
 
   /// Default constructor
   _ListViewCollaborator({
-    super.key,
     required this.space,
     required this.onDeleteCollaborator,
     required this.onAddCollaborator,
@@ -102,14 +173,14 @@ class _ListViewCollaborator extends StatelessWidget {
               itemBuilder: (context, index) {
                 return (index != collaborators.length)
                     ? CollaboratorCard(
-                  space: space,
-                  collaborator: collaborators[index],
-                  onDelete: onDeleteCollaborator,
-                )
+                        space: space,
+                        collaborator: collaborators[index],
+                        onDelete: onDeleteCollaborator,
+                      )
                     : _AddCollaboratorTile(
-                    space: space,
-                    onAdd: onAddCollaborator,
-                );
+                        space: space,
+                        onAdd: onAddCollaborator,
+                      );
               }),
         )
       ],
@@ -122,10 +193,8 @@ class _AddCollaboratorTile extends StatelessWidget {
   final void Function(BuildContext, String, String) onAdd;
   final TextEditingController _userToAddController = TextEditingController();
 
-
   /// Default constructor
   _AddCollaboratorTile({
-    super.key,
     required this.space,
     required this.onAdd,
   });

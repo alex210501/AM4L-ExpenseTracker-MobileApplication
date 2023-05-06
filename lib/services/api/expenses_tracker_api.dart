@@ -26,28 +26,28 @@ class ExpensesTrackerApi {
     };
 
     ApiRequest apiRequest = ApiRequest(
-        uri: '$uri/$loginPath',
-        method: HttpMethod.post,
-        body: body,
-        headers: appJsonHeader,
+      uri: '$uri/$loginPath',
+      method: HttpMethod.post,
+      body: body,
+      headers: appJsonHeader,
     );
 
     // Make HTTP request
     Map<dynamic, dynamic> response = await sendHttpRequest(apiRequest);
 
     // Get token from response
-    token = response['token'] as  String;
+    token = response['token'] as String;
     appJsonHeader['Authorization'] = getTokenHeader(token);
   }
 
   /// Logout from the API
   void logout() {
     ApiRequest apiRequest = ApiRequest(
-        uri: '$uri/$logoutPath',
-        method: HttpMethod.post,
-        headers: appJsonHeader,
+      uri: '$uri/$logoutPath',
+      method: HttpMethod.post,
+      headers: appJsonHeader,
     );
-    
+
     sendHttpRequest(apiRequest).then((_) => token = '');
   }
 }

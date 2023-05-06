@@ -18,32 +18,40 @@ class _SpacesScreenState extends State<SpacesScreen> {
   }
 
   _deleteSpace(Space space) {
-    widget.expensesTrackerApi.spaceApi.deleteSpace(space.id)
+    widget.expensesTrackerApi.spaceApi
+        .deleteSpace(space.id)
         .then((_) => setState(() {}));
+  }
+
+  _goToSpaceInfo(BuildContext context) {
+    Navigator.pushNamed(context, '/space/info', arguments: null);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Spaces'),),
-      floatingActionButton: IconButton(
-        onPressed: () => print('Add'),
-        icon: const Icon(Icons.add),
-      ),
-      body: FutureBuilder<List<Space>>(
-          future: _getSpaces(),
-          builder: (BuildContext context, AsyncSnapshot<List<Space>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
-            } else if (snapshot.connectionState == ConnectionState.done) {
-              return _SpaceListView(
+        appBar: AppBar(
+          title: const Text('Spaces'),
+        ),
+        floatingActionButton: IconButton(
+          onPressed: () => _goToSpaceInfo(context),
+          icon: const Icon(Icons.add),
+        ),
+        body: FutureBuilder<List<Space>>(
+            future: _getSpaces(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Space>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                return _SpaceListView(
                   spaces: snapshot.data ?? [],
                   onDelete: _deleteSpace,
-              );
-            }
+                );
+              }
 
-            return const Center(child: Text('Empty Data'));
-          }));
+              return const Center(child: Text('Empty Data'));
+            }));
   }
 }
 
@@ -73,30 +81,26 @@ class _SpaceListViewState extends State<_SpaceListView> {
 
     return Center(
         child: ListView.builder(
-          itemCount: spaces.length,
+            itemCount: spaces.length,
             itemBuilder: (context, index) {
               return Card(
-                  child: ListTile(
-                      title: Text(spaces[index].name),
-                      subtitle: Text(spaces[index].description),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                              onPressed: () => print('Edit'),
-                              icon: const Icon(Icons.edit),
-                          ),
-                          IconButton(
-                              onPressed: () => widget.onDelete(spaces[index]),
-                              icon: const Icon(Icons.delete)
-                          ),
-                        ],
+                child: ListTile(
+                  title: Text(spaces[index].name),
+                  subtitle: Text(spaces[index].description),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () => _goToSpaceInfo(context, spaces[index]),
+                        icon: const Icon(Icons.edit),
                       ),
-                    onTap: () => _goToSpaceInfo(context, spaces[index]),
+                      IconButton(
+                          onPressed: () => widget.onDelete(spaces[index]),
+                          icon: const Icon(Icons.delete)),
+                    ],
                   ),
+                ),
               );
-        }
-        )
-    );
+            }));
   }
 }

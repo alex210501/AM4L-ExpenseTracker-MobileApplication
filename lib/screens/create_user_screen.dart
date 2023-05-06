@@ -16,7 +16,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   /// Create User
   _createUser(BuildContext context, User user, String password) {
     widget.expensesTrackerApi.userApi
-        .createUser(user, 'yop')
+        .createUser(user, password)
         .then((_) => Navigator.pushNamed(context, '/login'))
         .catchError((error) => print(error));
   }
@@ -150,13 +150,13 @@ class _SignUpFormState extends State<_SignUpForm> {
             obscureText: true,
             validator: (text) {
               final password = _passwordController.text;
-              final confirPassword = _confirmPasswordController.text;
+              final confirmPassword = _confirmPasswordController.text;
 
               if (text == null || text.isEmpty) {
                 return "Password must be filled!";
               }
 
-              if (password != confirPassword) {
+              if (password != confirmPassword) {
                 return "Passwords must match!";
               }
 

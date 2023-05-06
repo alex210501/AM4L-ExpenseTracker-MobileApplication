@@ -24,3 +24,4 @@ doc/api/
 .idea/
 
 assets/configs
+.DS_Store

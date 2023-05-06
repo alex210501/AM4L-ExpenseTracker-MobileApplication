@@ -1,7 +1,7 @@
 class Space {
   final String id;
-  final String name;
-  final String description;
+  String name;
+  String description;
   final String admin;
   final List<String> collaborators;
 

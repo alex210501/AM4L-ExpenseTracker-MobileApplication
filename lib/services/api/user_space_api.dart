@@ -4,7 +4,7 @@ import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dar
 const userSpacePath = 'space/:spaceId/user';
 
 
-/// Class that manage the reqeust for the User Space Management
+/// Class that manage the request for the User Space Management
 class UserSpaceApi {
   final String uri;
   final Map<String,String> appJsonHeader;

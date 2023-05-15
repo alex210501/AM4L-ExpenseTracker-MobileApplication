@@ -2,7 +2,7 @@ class Expense {
   final String id;
   final double cost;
   final String description;
-  final DateTime date;
+  final String date;
   final String category;
   final String paidBy;
 
@@ -15,10 +15,10 @@ class Expense {
       required this.paidBy});
 
   Expense.fromJson(Map<String, dynamic> jsonData)
-      : id = jsonData['id'] ?? '',
-        cost = jsonData['cost'] ?? 0.0,
-        description = jsonData['description'] ?? '',
-        date = jsonData['date'] ?? DateTime.now(),
-        category = jsonData['category'] ?? '',
-        paidBy = jsonData['paydBy'] ?? '';
+      : id = jsonData['expense_id'] ?? '',
+        cost = (jsonData['expense_cost'] ?? 0.0).toDouble(),
+        description = jsonData['expense_description'] ?? '',
+        date = jsonData['expense_date'] ?? '',
+        category = jsonData['expense_category'] ?? '',
+        paidBy = jsonData['expense_paid_by'] ?? '';
 }

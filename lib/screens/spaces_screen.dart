@@ -75,6 +75,10 @@ class _SpaceListViewState extends State<_SpaceListView> {
     Navigator.pushNamed(context, '/space/info', arguments: space);
   }
 
+  _goToExpensesScreen(BuildContext context, Space space) {
+    Navigator.pushNamed(context, '/space/expenses', arguments: space);
+  }
+
   @override
   Widget build(BuildContext context) {
     final spaces = widget.spaces;
@@ -85,6 +89,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
             itemBuilder: (context, index) {
               return Card(
                 child: ListTile(
+                  onTap: () => _goToExpensesScreen(context, spaces[index]),
                   title: Text(spaces[index].name),
                   subtitle: Text(spaces[index].description),
                   trailing: Row(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/expenses_list.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/expenses_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
@@ -9,7 +10,6 @@ import 'package:am4l_expensetracker_mobileapplication/screens/space_information_
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,26 +25,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => DataService(),
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => DataService()),
+          ChangeNotifierProvider(create: (context) => ExpensesList()),
+        ],
         child: MaterialApp(
-          title: 'Expense Tracker',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-          ),
-          initialRoute: '/login',
-          routes: {
-            '/login': (context) =>
-                LoginScreen(expensesTrackerApi: expensesTrackerApi),
-            '/create-user': (context) =>
-                CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
-            '/space': (context) =>
-                SpacesScreen(expensesTrackerApi: expensesTrackerApi),
-            '/space/info': (context) =>
-                SpaceInformationScreen(expensesTrackerApi: expensesTrackerApi),
-            '/space/expenses': (context) =>
-                ExpensesScreen(expensesTrackerApi: expensesTrackerApi),
-          })
-    );
+            title: 'Expense Tracker',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+            ),
+            initialRoute: '/login',
+            routes: {
+              '/login': (context) => LoginScreen(expensesTrackerApi: expensesTrackerApi),
+              '/create-user': (context) => CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
+              '/space': (context) => SpacesScreen(expensesTrackerApi: expensesTrackerApi),
+              '/space/info': (context) =>
+                  SpaceInformationScreen(expensesTrackerApi: expensesTrackerApi),
+              '/space/expenses': (context) =>
+                  ExpensesScreen(expensesTrackerApi: expensesTrackerApi),
+            }));
   }
 }

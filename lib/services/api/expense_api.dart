@@ -29,4 +29,36 @@ class ExpenseApi {
         .map((value) => Expense.fromJson(value as Map<String, dynamic>))
         .toList();
   }
+
+  /// Create an expense to the API
+  Future<Expense> createExpense(String spaceId, Expense expense) async {
+    ApiRequest apiRequest = ApiRequest(
+      uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}',
+      method: HttpMethod.post,
+      headers: appJsonHeader,
+      body: {
+        'expense_cost': expense.cost,
+        'expense_date': expense.date,
+        'expense_description': expense.description,
+      },
+    );
+
+    // Send HTTP request
+    final response = await sendHttpRequest(apiRequest);
+
+    // Convert JSON to Expense
+    return Expense.fromJson(response);
+  }
+
+  /// Delete an expense from the API
+  Future<void> deleteExpense(spaceId, String expenseId) async {
+    ApiRequest apiRequest = ApiRequest(
+      uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}/$expenseId',
+      method: HttpMethod.delete,
+      headers: appJsonHeader,
+    );
+
+    // Send HTTP request
+    await sendHttpRequest(apiRequest);
+  }
 }

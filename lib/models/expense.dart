@@ -1,8 +1,8 @@
 class Expense {
   final String id;
-  final double cost;
-  final String description;
-  final String date;
+  double cost;
+  String description;
+  String date;
   final String category;
   final String paidBy;
 
@@ -21,4 +21,12 @@ class Expense {
         date = jsonData['expense_date'] ?? '',
         category = jsonData['expense_category'] ?? '',
         paidBy = jsonData['expense_paid_by'] ?? '';
+
+  Expense.defaultValues()
+      : id = '',
+        cost = 0.0,
+        description = '',
+        date = '',
+        category = '',
+        paidBy = '';
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -20,11 +23,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   _login(BuildContext context) {
-    /// Get username and password from controller
+    // Get the data service from context
+    final dataService = Provider.of<DataService>(context, listen: false);
+
+    // Clear the spaces memorise from last session
+    dataService?.clearSpaces();
+
+    // Get username and password from controller
     final username = _usernameController.text;
     final password = _passwordController.text;
 
-    /// Make API request to login
+    // Make API request to login
     widget.expensesTrackerApi.login(username, password)
       .then((_) => Navigator.pushNamed(context, '/space'));
   }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
 
 class SpacesScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -17,10 +20,13 @@ class _SpacesScreenState extends State<SpacesScreen> {
     return await widget.expensesTrackerApi.spaceApi.getSpaces();
   }
 
-  _deleteSpace(Space space) {
+  _deleteSpace(BuildContext context, Space space) {
     widget.expensesTrackerApi.spaceApi
         .deleteSpace(space.id)
-        .then((_) => setState(() {}));
+        .then((_) {
+          // Get and update the DataService
+          Provider.of<DataService>(context, listen: false).removeSpaceBySpaceID(space.id);
+        });
   }
 
   _goToSpaceInfo(BuildContext context) {
@@ -29,6 +35,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dataService = Provider.of<DataService>(context, listen: false);
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Spaces'),
@@ -44,10 +52,14 @@ class _SpacesScreenState extends State<SpacesScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.connectionState == ConnectionState.done) {
-                return _SpaceListView(
-                  spaces: snapshot.data ?? [],
-                  onDelete: _deleteSpace,
-                );
+                dataService.setSpaces(snapshot.data ?? [], notify: false);
+
+                return Consumer<DataService>(
+                    builder: (context, cart,child) {
+                      return _SpaceListView(
+                        onDelete: (arg) => _deleteSpace(context, arg),
+                      );
+                    });
               }
 
               return const Center(child: Text('Empty Data'));
@@ -57,12 +69,10 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
 @immutable
 class _SpaceListView extends StatefulWidget {
-  final List<Space> spaces;
   final void Function(Space) onDelete;
 
   const _SpaceListView({
     super.key,
-    required this.spaces,
     required this.onDelete,
   });
 
@@ -81,31 +91,35 @@ class _SpaceListViewState extends State<_SpaceListView> {
 
   @override
   Widget build(BuildContext context) {
-    final spaces = widget.spaces;
+    final spaces = Provider.of<DataService>(context, listen: false).spaces;
 
     return Center(
         child: ListView.builder(
             itemCount: spaces.length,
             itemBuilder: (context, index) {
-              return Card(
-                child: ListTile(
-                  onTap: () => _goToExpensesScreen(context, spaces[index]),
-                  title: Text(spaces[index].name),
-                  subtitle: Text(spaces[index].description),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () => _goToSpaceInfo(context, spaces[index]),
-                        icon: const Icon(Icons.edit),
+              return Dismissible(
+                key: ValueKey<Space>(spaces[index]),
+                  child: Card(
+                    child: ListTile(
+                      onTap: () => _goToExpensesScreen(context, spaces[index]),
+                      title: Text(spaces[index].name),
+                      subtitle: Text(spaces[index].description),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () => _goToSpaceInfo(context, spaces[index]),
+                            icon: const Icon(Icons.edit),
+                          ),
+                          IconButton(
+                              onPressed: () => widget.onDelete(spaces[index]),
+                              icon: const Icon(Icons.delete)),
+                        ],
                       ),
-                      IconButton(
-                          onPressed: () => widget.onDelete(spaces[index]),
-                          icon: const Icon(Icons.delete)),
-                    ],
+                    ),
                   ),
-                ),
               );
-            }));
+            })
+    );
   }
 }

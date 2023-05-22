@@ -77,6 +77,7 @@ class SpaceApi {
     );
 
     // Send HTTP request
-    await sendHttpRequest(apiRequest);
+    final response = await sendHttpRequest(apiRequest);
+    print(response);
   }
 }

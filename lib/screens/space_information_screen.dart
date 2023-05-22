@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
@@ -48,7 +51,13 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     if (isNewSpace) {
       widget.expensesTrackerApi.spaceApi
           .createSpace(_space)
-          .then((_) => Navigator.pop(context));
+          .then((newSpace) {
+            // Go to previous page
+            Navigator.pop(context);
+
+            // Get and update DataService space
+            Provider.of<DataService>(context, listen: false).addSpace(newSpace);
+          });
     } else {
       widget.expensesTrackerApi.spaceApi.updateSpace(_space);
     }

@@ -5,7 +5,7 @@ import 'package:am4l_expensetracker_mobileapplication/services/api/space_api.dar
 import 'package:am4l_expensetracker_mobileapplication/services/api/user_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/user_space_api.dart';
 
-const hostUri = 'https://alejandro-borbolla.com/expensestracker';
+const hostUri = 'https://alejandro-borbolla.com/expensestracker/api';
 const authenticationPath = 'auth';
 const loginPath = '$authenticationPath/login';
 const logoutPath = '$authenticationPath/logout';

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
 class SpacesScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -41,9 +42,13 @@ class _SpacesScreenState extends State<SpacesScreen> {
         appBar: AppBar(
           title: const Text('Spaces'),
         ),
-        floatingActionButton: IconButton(
-          onPressed: () => _goToSpaceInfo(context),
-          icon: const Icon(Icons.add),
+        floatingActionButton: ExpandableVerticalFAB(
+          distance: 50.0,
+          offsetY: 0.0,
+          children: [
+            TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
+            TextButton(onPressed: () => print('Pressed'), child: Text('Join')),
+          ],
         ),
         body: FutureBuilder<List<Space>>(
             future: _getSpaces(),

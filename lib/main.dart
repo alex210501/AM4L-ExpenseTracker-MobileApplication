@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/expenses_screen.dart';
+import 'package:am4l_expensetracker_mobileapplication/screens/expense_information_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/space_information_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
@@ -44,6 +45,8 @@ class MyApp extends StatelessWidget {
                   SpaceInformationScreen(expensesTrackerApi: expensesTrackerApi),
               '/space/expenses': (context) =>
                   ExpensesScreen(expensesTrackerApi: expensesTrackerApi),
+              '/space/expense/info': (context) => ExpenseInformationScreen(
+                  expensesTrackerApi: expensesTrackerApi),
             }));
   }
 }

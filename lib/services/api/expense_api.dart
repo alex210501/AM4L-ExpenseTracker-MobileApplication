@@ -51,11 +51,27 @@ class ExpenseApi {
   }
 
   /// Delete an expense from the API
-  Future<void> deleteExpense(spaceId, String expenseId) async {
+  Future<void> deleteExpense(String spaceId, String expenseId) async {
     ApiRequest apiRequest = ApiRequest(
       uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}/$expenseId',
       method: HttpMethod.delete,
       headers: appJsonHeader,
+    );
+
+    // Send HTTP request
+    await sendHttpRequest(apiRequest);
+  }
+
+  /// Update an expense
+  Future<void> patchExpense(String spaceId, Expense expense) async {
+    ApiRequest apiRequest = ApiRequest(
+      uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}/${expense.id}',
+      method: HttpMethod.patch,
+      headers: appJsonHeader,
+      body: {
+        'expense_description': expense.description,
+        'expense_cost': expense.cost,
+      }
     );
 
     // Send HTTP request

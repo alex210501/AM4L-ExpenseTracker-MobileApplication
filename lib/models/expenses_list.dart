@@ -47,4 +47,18 @@ class ExpensesList extends ChangeNotifier {
   Expense? getExpenseByID(String expenseId) {
     return _expenses.firstWhere((expense) => expense.id == expenseId);
   }
+
+  /// Update an expense
+  void updateExpense(Expense newExpense, { bool notify = true }) {
+    _expenses.forEach((expense) {
+      if(expense.id == newExpense.id) {
+        expense.description = newExpense.description;
+        expense.cost = newExpense.cost;
+      }
+    });
+
+    if (notify) {
+      notifyListeners();
+    }
+  }
 }

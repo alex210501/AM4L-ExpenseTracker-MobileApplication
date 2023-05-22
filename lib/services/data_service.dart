@@ -27,6 +27,11 @@ class DataService extends ChangeNotifier {
     _spaces.clear();
   }
 
+  /// Get space by its ID
+  Space? getSpaceByID(String spaceId) {
+    return _spaces.firstWhere((space) => space.id == spaceId);
+  }
+
   /// Add a new space to the list
   void addSpace(Space newSpace, { bool notify = true }) {
     _spaces.add(newSpace);

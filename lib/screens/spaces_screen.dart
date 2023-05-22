@@ -99,22 +99,29 @@ class _SpaceListViewState extends State<_SpaceListView> {
             itemBuilder: (context, index) {
               return Dismissible(
                 key: ValueKey<Space>(spaces[index]),
-                  child: Card(
-                    child: ListTile(
-                      onTap: () => _goToExpensesScreen(context, spaces[index]),
-                      title: Text(spaces[index].name),
-                      subtitle: Text(spaces[index].description),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () => _goToSpaceInfo(context, spaces[index]),
-                            icon: const Icon(Icons.edit),
-                          ),
-                          IconButton(
-                              onPressed: () => widget.onDelete(spaces[index]),
-                              icon: const Icon(Icons.delete)),
-                        ],
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                ),
+                onDismissed: (_) => widget.onDelete(spaces[index]),
+                child: Card(
+                  child: ListTile(
+                    onTap: () => _goToExpensesScreen(context, spaces[index]),
+                    title: Text(spaces[index].name),
+                    subtitle: Text(spaces[index].description),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () => _goToSpaceInfo(context, spaces[index]),
+                          icon: const Icon(Icons.edit),
+                        ),],
                       ),
                     ),
                   ),

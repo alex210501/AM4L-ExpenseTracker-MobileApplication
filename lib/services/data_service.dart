@@ -1,8 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
-
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 
 
@@ -12,7 +10,7 @@ class DataService extends ChangeNotifier {
 
   /// Getter for the spaces
   List<Space> get spaces {
-    return List.from(_spaces);
+    return UnmodifiableListView(_spaces);
   }
 
   /// Set new spaces

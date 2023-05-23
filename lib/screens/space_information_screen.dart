@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
@@ -105,7 +106,16 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
       body: Center(
         child: Column(
           children: [
-            !isNewSpace ? Text('ID: ${_space.id}') : Container(),
+            !isNewSpace ?
+            Row(
+                children: [
+                  Text('ID: ${_space.id[0]}', overflow: TextOverflow.visible, softWrap: false,),
+                  IconButton(
+                    onPressed: () => Clipboard.setData(ClipboardData(text: _space.id)),
+                    icon: const Icon(Icons.content_copy),
+                  )
+                ],
+            ) : Container(),
             _SpaceInfoTextForm(
               title: 'Name',
               controller: _nameController,

@@ -21,6 +21,41 @@ class _SpacesScreenState extends State<SpacesScreen> {
     return await widget.expensesTrackerApi.spaceApi.getSpaces();
   }
 
+  void _joinSpace(BuildContext context, String spaceId) {
+    widget.expensesTrackerApi.userSpaceApi.joinSpace(spaceId)
+        .then((_) {
+          // Get information from the space joined
+          widget.expensesTrackerApi.spaceApi.getSpace(spaceId)
+              .then((newSpace) {
+                Provider.of<DataService>(context, listen: false).addSpace(newSpace);
+                Navigator.pop(context);
+              });
+    });
+  }
+
+  void _openDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String spaceId = '';
+
+        return AlertDialog(
+          title: const Text('Join space'),
+          content: TextField(
+            onChanged: (value) => spaceId = value,
+            decoration: const InputDecoration(hintText: 'Enter a space ID'),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => _joinSpace(context, spaceId),
+              child: const Text('Join'),
+            ),
+          ],
+        );
+      }
+    );
+  }
+
   _deleteSpace(BuildContext context, Space space) {
     widget.expensesTrackerApi.spaceApi
         .deleteSpace(space.id)
@@ -47,7 +82,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
           offsetY: 0.0,
           children: [
             TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
-            TextButton(onPressed: () => print('Pressed'), child: Text('Join')),
+            TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
           ],
         ),
         body: FutureBuilder<List<Space>>(

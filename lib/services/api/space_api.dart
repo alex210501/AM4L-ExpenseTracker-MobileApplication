@@ -29,6 +29,21 @@ class SpaceApi {
         .toList();
   }
 
+  /// Get space given it ID
+  Future<Space> getSpace(String spaceId) async {
+    ApiRequest apiRequest = ApiRequest(
+      uri: '$uri/$spacePath/$spaceId',
+      method: HttpMethod.get,
+      headers: appJsonHeader,
+    );
+
+    // Send HTTP request
+    final Map<String, dynamic> response = await sendHttpRequest(apiRequest);
+
+    // Convert JSON to space
+    return Space.fromJson(response);
+  }
+
   /// Create space to the API
   Future<Space> createSpace(Space space) async {
     // Create the ody

@@ -2,6 +2,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
 
 const userSpacePath = 'space/:spaceId/user';
+const joinSpacePath = 'space/:spaceId/join';
 
 
 /// Class that manage the request for the User Space Management
@@ -31,6 +32,18 @@ class UserSpaceApi {
         uri: '$uri/${userSpacePath.replaceAll(':spaceId', spaceId)}/$username',
         method: HttpMethod.delete,
         headers: appJsonHeader,
+    );
+
+    /// Send HTTP request
+    await sendHttpRequest(apiRequest);
+  }
+
+  /// Join a space given its ID
+  Future<void> joinSpace(String spaceId) async {
+    ApiRequest apiRequest = ApiRequest(
+      uri: '$uri/${joinSpacePath.replaceAll(':spaceId', spaceId)}',
+      method: HttpMethod.post,
+      headers: appJsonHeader,
     );
 
     /// Send HTTP request

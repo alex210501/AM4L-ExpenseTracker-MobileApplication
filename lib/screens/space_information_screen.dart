@@ -25,7 +25,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   late TextEditingController _nameController;
 
   /// Load space from the route argument
-  _loadSpaceFromRouteArgument(BuildContext context) {
+  void _loadSpaceFromRouteArgument(BuildContext context) {
     final spaceArg = ModalRoute.of(context)!.settings.arguments;
 
     // If the space is not passed to the function, go back to the last screen
@@ -43,7 +43,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   }
 
   /// Save space
-  _saveSpace(BuildContext context) {
+  void _saveSpace(BuildContext context) {
     // Load data from input into space
     _space.name = _nameController.text;
     _space.description = _descriptionController.text;
@@ -65,7 +65,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   }
 
   /// Add a collaborator to a space
-  _addCollaboratorToSpace(
+  void _addCollaboratorToSpace(
       BuildContext context, String spaceId, String collaborator) {
     widget.expensesTrackerApi.userSpaceApi
         .addUser(spaceId, collaborator)
@@ -76,7 +76,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   }
 
   /// Delete a collaborator from a space
-  _deleteCollaboratorFromSpace(
+  void _deleteCollaboratorFromSpace(
       BuildContext context, String spaceId, String collaborator) {
     widget.expensesTrackerApi.userSpaceApi
         .deleteUser(spaceId, collaborator)
@@ -84,6 +84,15 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
       _space.collaborators.remove(collaborator);
       setState(() {});
     });
+  }
+
+  /// Copy the space ID to the clipboard
+  void _copySpaceIdToClipboard(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: _space.id));
+
+    // Show a SnackBar(BuildContext context) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Space ID copied to the clipboard!')));
   }
 
   @override
@@ -109,11 +118,16 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
             !isNewSpace ?
             Row(
                 children: [
-                  Text('ID: ${_space.id[0]}', overflow: TextOverflow.visible, softWrap: false,),
-                  IconButton(
-                    onPressed: () => Clipboard.setData(ClipboardData(text: _space.id)),
-                    icon: const Icon(Icons.content_copy),
-                  )
+                  Flexible(
+                    flex: 4,
+                    child: Text('ID: ${_space.id}', overflow: TextOverflow.ellipsis,),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: IconButton(
+                      onPressed: () => _copySpaceIdToClipboard(context),
+                      icon: const Icon(Icons.content_copy),
+                  ),),
                 ],
             ) : Container(),
             _SpaceInfoTextForm(

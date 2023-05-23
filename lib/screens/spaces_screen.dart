@@ -17,56 +17,61 @@ class SpacesScreen extends StatefulWidget {
 }
 
 class _SpacesScreenState extends State<SpacesScreen> {
+  bool _isFabOpen = false;
+
   Future<List<Space>> _getSpaces() async {
     return await widget.expensesTrackerApi.spaceApi.getSpaces();
   }
 
   void _joinSpace(BuildContext context, String spaceId) {
-    widget.expensesTrackerApi.userSpaceApi.joinSpace(spaceId)
-        .then((_) {
-          // Get information from the space joined
-          widget.expensesTrackerApi.spaceApi.getSpace(spaceId)
-              .then((newSpace) {
-                Provider.of<DataService>(context, listen: false).addSpace(newSpace);
-                Navigator.pop(context);
-              });
+    widget.expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
+      // Get information from the space joined
+      widget.expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
+        Provider.of<DataService>(context, listen: false).addSpace(newSpace);
+        Navigator.pop(context);
+      });
     });
   }
 
   void _openDialog(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        String spaceId = '';
+        context: context,
+        builder: (BuildContext context) {
+          String spaceId = '';
 
-        return AlertDialog(
-          title: const Text('Join space'),
-          content: TextField(
-            onChanged: (value) => spaceId = value,
-            decoration: const InputDecoration(hintText: 'Enter a space ID'),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () => _joinSpace(context, spaceId),
-              child: const Text('Join'),
+          return AlertDialog(
+            title: const Text('Join space'),
+            content: TextField(
+              onChanged: (value) => spaceId = value,
+              decoration: const InputDecoration(hintText: 'Enter a space ID'),
             ),
-          ],
-        );
-      }
-    );
+            actions: [
+              ElevatedButton(
+                onPressed: () => _joinSpace(context, spaceId),
+                child: const Text('Join'),
+              ),
+            ],
+          );
+        });
   }
 
   _deleteSpace(BuildContext context, Space space) {
-    widget.expensesTrackerApi.spaceApi
-        .deleteSpace(space.id)
-        .then((_) {
-          // Get and update the DataService
-          Provider.of<DataService>(context, listen: false).removeSpaceBySpaceID(space.id);
-        });
+    widget.expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
+      // Get and update the DataService
+      Provider.of<DataService>(context, listen: false).removeSpaceBySpaceID(space.id);
+    });
   }
 
   _goToSpaceInfo(BuildContext context) {
     Navigator.pushNamed(context, '/space/info', arguments: null);
+  }
+
+  _onFabOpen(BuildContext context) {
+    setState(() => _isFabOpen = true);
+  }
+
+  _onFabClose(BuildContext context) {
+    setState(() => _isFabOpen = false);
   }
 
   @override
@@ -80,6 +85,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
         floatingActionButton: ExpandableVerticalFAB(
           distance: 50.0,
           offsetY: 0.0,
+          onOpen: _onFabOpen,
+          onClose: _onFabClose,
           children: [
             TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
             TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
@@ -87,19 +94,19 @@ class _SpacesScreenState extends State<SpacesScreen> {
         ),
         body: FutureBuilder<List<Space>>(
             future: _getSpaces(),
-            builder:
-                (BuildContext context, AsyncSnapshot<List<Space>> snapshot) {
+            builder: (BuildContext context, AsyncSnapshot<List<Space>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.connectionState == ConnectionState.done) {
                 dataService.setSpaces(snapshot.data ?? [], notify: false);
 
-                return Consumer<DataService>(
-                    builder: (context, cart,child) {
-                      return _SpaceListView(
+                return Consumer<DataService>(builder: (context, cart, child) {
+                  return IgnorePointer(
+                      ignoring: _isFabOpen,
+                      child: _SpaceListView(
                         onDelete: (arg) => _deleteSpace(context, arg),
-                      );
-                    });
+                      ));
+                });
               }
 
               return const Center(child: Text('Empty Data'));
@@ -161,12 +168,12 @@ class _SpaceListViewState extends State<_SpaceListView> {
                         IconButton(
                           onPressed: () => _goToSpaceInfo(context, spaces[index]),
                           icon: const Icon(Icons.edit),
-                        ),],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
+                ),
               );
-            })
-    );
+            }));
   }
 }

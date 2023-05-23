@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 const defaultDistance = 50.0;
@@ -9,6 +11,8 @@ class ExpandableVerticalFAB extends StatefulWidget {
   final double offsetY;
   final double offsetX;
   final List<Widget> children;
+  final void Function(BuildContext)? onOpen;
+  final void Function(BuildContext)? onClose;
 
   const ExpandableVerticalFAB({
     super.key,
@@ -16,6 +20,8 @@ class ExpandableVerticalFAB extends StatefulWidget {
     this.distance = defaultDistance,
     this.offsetY = defaultOffsetY,
     this.offsetX = defaultOffsetX,
+    this.onOpen,
+    this.onClose,
   });
 
   @override
@@ -25,9 +31,15 @@ class ExpandableVerticalFAB extends StatefulWidget {
 class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
   bool _isOpen = false;
 
-  void _toggle() {
+  void _toggle(BuildContext context) {
     setState(() {
       _isOpen = !_isOpen;
+
+      if (_isOpen && widget.onOpen != null) {
+        widget.onOpen!(context);
+      } else if (widget.onClose != null) {
+        widget.onClose!(context);
+      }
     });
   }
 
@@ -37,7 +49,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
         child: IgnorePointer(
             ignoring: _isOpen,
             child: IconButton(
-              onPressed: _toggle,
+              onPressed: () => _toggle(context),
               icon: const Icon(Icons.add),
             )));
   }
@@ -47,7 +59,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
       Opacity(
         opacity: _isOpen ? 1.0 : 0.0,
         child: IconButton(
-          onPressed: _toggle,
+          onPressed: () => _toggle(context),
           icon: const Icon(Icons.close),
         ),
       ),
@@ -68,7 +80,12 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return BackdropFilter(
+      filter: ImageFilter.blur(
+        sigmaX: _isOpen ? 5 : 0,
+        sigmaY: _isOpen ? 5 : 0,
+      ),
+      child: SizedBox(
         height: (widget.children.length + 1) * widget.distance,
         child: Stack(
           alignment: Alignment.bottomCenter,
@@ -77,6 +94,8 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
             _openButton(),
             ..._createVerticalChildren(),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

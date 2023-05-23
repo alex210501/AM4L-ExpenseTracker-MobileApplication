@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -35,7 +36,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     // Make API request to login
     widget.expensesTrackerApi.login(username, password)
-      .then((_) => Navigator.pushNamed(context, '/space'));
+      .then((_) => Navigator.pushNamed(context, '/space'))
+      .catchError((err) {
+        showErrorDialog(context, err);
+      });
   }
 
   @override

@@ -15,7 +15,8 @@ Future<dynamic> sendHttpRequest(ApiRequest apiRequest) async {
     return response.content;
   }
 
-  throw Exception('Error: ${response.content}');
+  // The error received is a JSON
+  throw Exception(response.content['msg'] ?? 'Unknown error');
 }
 
 String getTokenHeader(String token) {

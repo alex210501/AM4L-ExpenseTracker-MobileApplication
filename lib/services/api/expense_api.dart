@@ -71,6 +71,7 @@ class ExpenseApi {
       body: {
         'expense_description': expense.description,
         'expense_cost': expense.cost,
+        'expense_category': expense.category,
       }
     );
 

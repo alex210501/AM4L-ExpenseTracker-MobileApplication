@@ -3,7 +3,7 @@ class Expense {
   double cost;
   String description;
   String date;
-  final String category;
+  String? category;
   final String paidBy;
 
   Expense(
@@ -19,7 +19,7 @@ class Expense {
         cost = (jsonData['expense_cost'] ?? 0.0).toDouble(),
         description = jsonData['expense_description'] ?? '',
         date = jsonData['expense_date'] ?? '',
-        category = jsonData['expense_category'] ?? '',
+        category = jsonData['expense_category'],
         paidBy = jsonData['expense_paid_by'] ?? '';
 
   Expense.defaultValues()

@@ -54,6 +54,7 @@ class ExpensesListModel extends ChangeNotifier {
       if(expense.id == newExpense.id) {
         expense.description = newExpense.description;
         expense.cost = newExpense.cost;
+        expense.category = newExpense.category;
       }
     });
 

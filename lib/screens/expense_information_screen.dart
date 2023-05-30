@@ -1,3 +1,5 @@
+import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -55,7 +57,12 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Load arguments passed to the route
     _loadFromArguments(context);
+
+    // Take the category of the expense
+    final category = Provider.of<CategoriesListModel>(context, listen: false)
+        .getCategoryById(_expense.category ?? '');
 
     return Consumer<ExpensesListModel>(builder: (context, card, child) {
       return Scaffold(
@@ -75,7 +82,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
               Text('Cost: ${_expense.cost}€'),
               Text('Author: ${_expense.paidBy}'),
               Text('Date: ${_expense.date}'),
-              Text('Category: ${_expense.category}'),
+              Text('Category: ${category?.title ?? 'None'}'),
             ],
           ),
         ),

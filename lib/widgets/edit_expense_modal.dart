@@ -1,8 +1,10 @@
+import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
@@ -45,6 +47,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   bool _isLoading = false;
   bool _firstBuild = true;
   bool _isNewExpense = false;
+  Category? _category;
   Expense _expense = Expense.defaultValues();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
@@ -64,6 +67,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     // Take the values from the controllers
     _expense.cost = double.parse(_costController.text);
     _expense.description = _descriptionController.text;
+    _expense.category = _category?.id;
 
     // Start loading
     _setLoading(true);
@@ -85,7 +89,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
         _setLoading(false);
         Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
         Navigator.pop(context, _expense);
-      });
+      }).catchError((err) => print(err));
     }
   }
 
@@ -99,11 +103,19 @@ class _ExpenseFormState extends State<ExpenseForm> {
       // TODO: Show an error if the requested expense is not on the list
       _expense = Provider.of<ExpensesListModel>(context).getExpenseByID(widget.expenseId!) ??
           Expense.defaultValues();
+      _category = Provider.of<CategoriesListModel>(context, listen: false)
+          .getCategoryById(_expense.category ?? '');
     }
 
     // Set the text from the TextEditingController
     _descriptionController.text = _expense.description;
     _costController.text = _expense.cost.toString();
+  }
+
+  void _onCategoryChanged(Category? newCategory) {
+    setState(() {
+      _category = newCategory;
+    });
   }
 
   /// Dispose the widget
@@ -118,6 +130,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   @override
   Widget build(BuildContext context) {
+    final categories = [
+      null,
+      ...Provider.of<CategoriesListModel>(context, listen: false).categories,
+    ];
     if (_firstBuild) {
       _firstBuild = false;
       _loadExpense(context);
@@ -128,14 +144,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text(
-            _isNewExpense ? 'New expense' : _expense.description,
-          ),
+          title: Text(_isNewExpense ? 'New expense' : _expense.description),
           leading: TextButton(
-            child: const Text(
-              'Cancel',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
@@ -164,6 +175,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
                     decoration: const InputDecoration(hintText: "Cost"),
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
+                  _CategoryDropdownButton(
+                    dropdownValue: _category,
+                    onChanged: _onCategoryChanged,
+                  ),
                 ],
               ),
             ),
@@ -171,6 +186,37 @@ class _ExpenseFormState extends State<ExpenseForm> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _CategoryDropdownButton extends StatelessWidget {
+  final Category? dropdownValue;
+  final void Function(Category?) onChanged;
+
+  const _CategoryDropdownButton({
+    super.key,
+    required this.dropdownValue,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Load categories
+    final categories = [
+      null,
+      ...Provider.of<CategoriesListModel>(context, listen: false).categories,
+    ];
+
+    return DropdownButton<Category?>(
+      value: dropdownValue,
+      items: categories.map<DropdownMenuItem<Category?>>((Category? category) {
+        return DropdownMenuItem(
+          value: category,
+          child: Text(category != null ? category.title : 'None'),
+        );
+      }).toList(),
+      onChanged: onChanged,
     );
   }
 }

@@ -44,7 +44,11 @@ class CategoriesListModel extends ChangeNotifier {
 
   /// Get category by ID
   Category? getCategoryById(String categoryId, { bool notify = true }) {
-    return _categories.firstWhere((category) => category.id == categoryId);
+    try {
+      return _categories.firstWhere((category) => category.id == categoryId);
+    } on StateError {
+      return null;
+    }
   }
 
   /// Update a category

@@ -50,4 +50,19 @@ class SpacesListModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Update a space
+  void updateSpace(Space newSpace, { bool notify = true }) {
+    _spaces.forEach((space) {
+      if (space.id == newSpace.id) {
+        space.description = newSpace.description;
+        space.name = newSpace.name;
+        space.collaborators = List.from(newSpace.collaborators);
+      }
+    });
+
+    if (notify) {
+      notifyListeners();
+    }
+  }
 }

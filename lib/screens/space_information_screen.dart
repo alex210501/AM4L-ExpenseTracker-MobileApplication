@@ -63,7 +63,18 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
             Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
           });
     } else {
-      widget.expensesTrackerApi.spaceApi.updateSpace(_space);
+      widget.expensesTrackerApi.spaceApi.updateSpace(_space)
+          .then((_) {
+            // Update the space
+            Provider.of<SpacesListModel>(context, listen: false).updateSpace(_space);
+
+            // Close the keyboard
+            FocusScope.of(context).unfocus();
+
+            // Show SnackBar
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Space information updated!')));
+      });
     }
   }
 
@@ -93,7 +104,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   void _copySpaceIdToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: _space.id));
 
-    // Show a SnackBar(BuildContext context) {
+    // Show a SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Space ID copied to the clipboard!')));
   }

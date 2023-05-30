@@ -3,7 +3,7 @@ class Space {
   String name;
   String description;
   final String admin;
-  final List<String> collaborators;
+  List<String> collaborators;
 
   Space(
       {required this.id,

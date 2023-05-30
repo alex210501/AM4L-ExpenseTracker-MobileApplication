@@ -6,15 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 
 Future<Expense?> showEditExpenseModal(
-    BuildContext context,
-    Space space,
-    ExpensesTrackerApi expensesTrackerApi,
-    { String? expenseId }
-    ) {
+    BuildContext context, Space space, ExpensesTrackerApi expensesTrackerApi,
+    {String? expenseId}) {
   return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -28,11 +26,12 @@ Future<Expense?> showEditExpenseModal(
 }
 
 class ExpenseForm extends StatefulWidget {
-  final expensesTrackerApi;
+  final ExpensesTrackerApi expensesTrackerApi;
   final String spaceId;
   final String? expenseId;
 
   const ExpenseForm({
+    super.key,
     required this.expensesTrackerApi,
     required this.spaceId,
     this.expenseId,
@@ -43,12 +42,19 @@ class ExpenseForm extends StatefulWidget {
 }
 
 class _ExpenseFormState extends State<ExpenseForm> {
+  bool _isLoading = false;
   bool _firstBuild = true;
   bool _isNewExpense = false;
   Expense _expense = Expense.defaultValues();
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
+
+  void _setLoading(bool loadingMode) {
+    setState(() {
+      _isLoading = loadingMode;
+    });
+  }
 
   /// Save the expense to the API
   void _onSave(BuildContext context) {
@@ -59,6 +65,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _expense.cost = double.parse(_costController.text);
     _expense.description = _descriptionController.text;
 
+    // Start loading
+    _setLoading(true);
+
     // If the expense is new then create it, otherwise you update it
     if (_isNewExpense) {
       // Set the date to now
@@ -67,16 +76,16 @@ class _ExpenseFormState extends State<ExpenseForm> {
       widget.expensesTrackerApi.expenseApi
           .createExpense(widget.spaceId, _expense)
           .then((newExpense) {
-            Provider.of<ExpensesListModel>(context, listen: false).addExpense(newExpense);
-            Navigator.pop(context);
-          });
+        _setLoading(false);
+        Provider.of<ExpensesListModel>(context, listen: false).addExpense(newExpense);
+        Navigator.pop(context);
+      });
     } else {
-      widget.expensesTrackerApi.expenseApi
-          .patchExpense(widget.spaceId, _expense)
-          .then((_) {
-            Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
-            Navigator.pop(context, _expense);
-          });
+      widget.expensesTrackerApi.expenseApi.patchExpense(widget.spaceId, _expense).then((_) {
+        _setLoading(false);
+        Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
+        Navigator.pop(context, _expense);
+      });
     }
   }
 
@@ -136,25 +145,30 @@ class _ExpenseFormState extends State<ExpenseForm> {
             ),
           ],
         ),
-        body: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(hintText: "Expense description"),
-                validator: (text) {
-                  return (text == null || text.isEmpty) ? "Description cannot be empty!" : null;
-                },
+        body: Stack(
+          children: [
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(hintText: "Expense description"),
+                    validator: (text) {
+                      return (text == null || text.isEmpty) ? "Description cannot be empty!" : null;
+                    },
+                  ),
+                  TextFormField(
+                    controller: _costController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(hintText: "Cost"),
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  ),
+                ],
               ),
-              TextFormField(
-                controller: _costController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(hintText: "Cost"),
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-            ],
-          ),
+            ),
+            if (_isLoading) const ApiLoadingIndicator(),
+          ],
         ),
       ),
     );

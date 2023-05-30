@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -5,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
 class SpacesScreen extends StatefulWidget {
@@ -79,27 +83,27 @@ class _SpacesScreenState extends State<SpacesScreen> {
     final dataService = Provider.of<SpacesListModel>(context, listen: false);
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Spaces'),
-        ),
-        floatingActionButton: ExpandableVerticalFAB(
-          distance: 50.0,
-          offsetY: 0.0,
-          onOpen: _onFabOpen,
-          onClose: _onFabClose,
-          children: [
-            TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
-            TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
-          ],
-        ),
-        body: Consumer<SpacesListModel>(builder: (context, cart, child) {
-          return IgnorePointer(
-              ignoring: _isFabOpen,
-              child: _SpaceListView(
-                expensesTrackerApi: widget.expensesTrackerApi,
-                onDelete: (arg) => _deleteSpace(context, arg),
-              ));
-        }),
+      appBar: AppBar(
+        title: const Text('Spaces'),
+      ),
+      floatingActionButton: ExpandableVerticalFAB(
+        distance: 50.0,
+        offsetY: 0.0,
+        onOpen: _onFabOpen,
+        onClose: _onFabClose,
+        children: [
+          TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
+          TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
+        ],
+      ),
+      body: Consumer<SpacesListModel>(builder: (context, cart, child) {
+        return IgnorePointer(
+            ignoring: _isFabOpen,
+            child: _SpaceListView(
+              expensesTrackerApi: widget.expensesTrackerApi,
+              onDelete: (arg) => _deleteSpace(context, arg),
+            ));
+      }),
     );
   }
 }
@@ -120,12 +124,30 @@ class _SpaceListView extends StatefulWidget {
 }
 
 class _SpaceListViewState extends State<_SpaceListView> {
+  bool _isLoading = false;
+
+  void _setLoading(bool loadingMode) {
+    setState(() {
+      _isLoading = loadingMode;
+    });
+  }
+
   _goToSpaceInfo(BuildContext context, Space space) {
     Navigator.pushNamed(context, '/space/info', arguments: space);
   }
 
   _goToExpensesScreen(BuildContext context, Space space) {
-    Navigator.pushNamed(context, '/space/expenses', arguments: space);
+    _setLoading(true);
+
+    widget.expensesTrackerApi.expenseApi.getExpenses(space.id).then((expenses) {
+      _setLoading(false);
+
+      // Set the expenses
+      Provider.of<ExpensesListModel>(context, listen: false).setExpenses(expenses);
+
+      // Go to ExpensesScreen
+      Navigator.pushNamed(context, '/space/expenses', arguments: space);
+    });
   }
 
   /// Function to refresh the spaces
@@ -142,41 +164,46 @@ class _SpaceListViewState extends State<_SpaceListView> {
     final spaces = Provider.of<SpacesListModel>(context, listen: false).spaces;
 
     return Center(
-        child: RefreshIndicator(
-          onRefresh: () => _onRefresh(context),
-          child: ListView.builder(
-            itemCount: spaces.length,
-            itemBuilder: (context, index) {
-              return Dismissible(
-                key: ValueKey<Space>(spaces[index]),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  ),
-                ),
-                onDismissed: (_) => widget.onDelete(spaces[index]),
-                child: Card(
-                  child: ListTile(
-                    onTap: () => _goToExpensesScreen(context, spaces[index]),
-                    title: Text(spaces[index].name),
-                    subtitle: Text(spaces[index].description),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: () => _goToSpaceInfo(context, spaces[index]),
-                          icon: const Icon(Icons.edit),
-                        ),
-                      ],
+      child: RefreshIndicator(
+        onRefresh: () => _onRefresh(context),
+        child: Stack(children: [
+          ListView.builder(
+              itemCount: spaces.length,
+              itemBuilder: (context, index) {
+                return Dismissible(
+                  key: ValueKey<Space>(spaces[index]),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
                   ),
-                ),
-              );
-            })));
+                  onDismissed: (_) => widget.onDelete(spaces[index]),
+                  child: Card(
+                    child: ListTile(
+                      onTap: () => _goToExpensesScreen(context, spaces[index]),
+                      title: Text(spaces[index].name),
+                      subtitle: Text(spaces[index].description),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () => _goToSpaceInfo(context, spaces[index]),
+                            icon: const Icon(Icons.edit),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }),
+          if (_isLoading) const ApiLoadingIndicator(),
+        ]),
+      ),
+    );
   }
 }

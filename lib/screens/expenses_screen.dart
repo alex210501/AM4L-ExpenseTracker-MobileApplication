@@ -21,10 +21,6 @@ class ExpensesScreen extends StatefulWidget {
 class _ExpensesScreenState extends State<ExpensesScreen> {
   Space _space = Space.defaultValue();
 
-  Future<List<Expense>> _getExpenses() async {
-    return await widget.expensesTrackerApi.expenseApi.getExpenses(_space.id);
-  }
-
   void _onDeleteExpense(BuildContext context, Expense expense) {
     widget.expensesTrackerApi.expenseApi.deleteExpense(_space.id, expense.id)
         .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id));
@@ -49,22 +45,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         onPressed: () => showEditExpenseModal(context, _space, widget.expensesTrackerApi),
         icon: const Icon(Icons.add),
       ),
-      body: FutureBuilder<List<Expense>>(
-        future: _getExpenses(),
-        builder: (BuildContext context, AsyncSnapshot<List<Expense>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            expensesList.setExpenses(snapshot.data ?? [], notify: false);
-
-            return Consumer<ExpensesListModel>(builder: (context, card, child) {
-              return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense,);
-            });
-          }
-
-          return const Center(child: Text('Empty Data'));
-        },
-      ),
+      body: Consumer<ExpensesListModel>(builder: (context, card, child) {
+        return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense,);
+      }),
     );
   }
 }

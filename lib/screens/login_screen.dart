@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -7,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
+
 
 class LoginScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -110,29 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-          if (_isLoading)
-            Center(child: _LoginCircularProgressIndicator(),),
+          if (_isLoading) const ApiLoadingIndicator(),
         ]),
       ),
-    );
-  }
-}
-
-/// Circular progress indicator for login
-class _LoginCircularProgressIndicator extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5,),
-      child: Container(
-        width: 200,
-        height: 200,
-        padding: const EdgeInsets.all(50.0),
-        decoration: BoxDecoration(
-            color: Colors.grey[350],
-            borderRadius: BorderRadius.circular(10)
-        ),
-        child: const CircularProgressIndicator(strokeWidth: 5,),),
     );
   }
 }

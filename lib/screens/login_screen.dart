@@ -1,11 +1,12 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+
+import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -34,9 +35,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login(BuildContext context) {
     // Get the SpacesListModel from context
     final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
+    final expensesListModel = Provider.of<ExpensesListModel>(context, listen: false);
 
-    // Clear the spaces memorise from last session
+    // Clear the information memorized from last session
     spacesListModel.clearSpaces();
+    expensesListModel.clearExpenses();
 
     // Set loading mode
     _setLoading(true);

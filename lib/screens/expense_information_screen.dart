@@ -9,14 +9,20 @@ import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.d
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 
-class ExpenseInformationScreen extends StatelessWidget {
+class ExpenseInformationScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
+
+  ExpenseInformationScreen({super.key, required this.expensesTrackerApi});
+
+  @override
+  State<ExpenseInformationScreen> createState() => _ExpenseInformationScreenState();
+}
+
+class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
   String _spaceId = '';
   String _expenseId = '';
   Space _space = Space.defaultValue();
   Expense _expense = Expense.defaultValues();
-
-  ExpenseInformationScreen({super.key, required this.expensesTrackerApi});
 
   void _loadFromArguments(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
@@ -30,8 +36,21 @@ class ExpenseInformationScreen extends StatelessWidget {
     _expense = Provider.of<ExpensesListModel>(context, listen: false).getExpenseByID(_expenseId)!;
   }
 
-  void _onEdit(BuildContext context) {
-    showEditExpenseModal(context, _space, expensesTrackerApi, expenseId: _expenseId);
+  void _onEdit(BuildContext context) async {
+    // Get the new expense
+    final updatedExpense = await showEditExpenseModal(
+        context,
+        _space,
+        widget.expensesTrackerApi,
+        expenseId: _expenseId,
+    );
+
+    // If the expense is not null, we can update the current one
+    if (updatedExpense != null) {
+      setState(() {
+        _expense = updatedExpense;
+      });
+    }
   }
 
   @override

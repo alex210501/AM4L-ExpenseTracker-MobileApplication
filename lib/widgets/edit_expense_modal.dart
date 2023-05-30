@@ -9,13 +9,13 @@ import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 
-void showEditExpenseModal(
+Future<Expense?> showEditExpenseModal(
     BuildContext context,
     Space space,
     ExpensesTrackerApi expensesTrackerApi,
     { String? expenseId }
     ) {
-  showModalBottomSheet(
+  return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
@@ -75,7 +75,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
           .patchExpense(widget.spaceId, _expense)
           .then((_) {
             Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
-            Navigator.pop(context);
+            Navigator.pop(context, _expense);
           });
     }
   }

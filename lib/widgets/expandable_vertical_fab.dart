@@ -87,6 +87,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
       ),
       child: SizedBox(
         height: (widget.children.length + 1) * widget.distance,
+        width: 100,
         child: Stack(
           alignment: Alignment.bottomCenter,
           clipBehavior: Clip.none,

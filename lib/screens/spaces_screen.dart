@@ -92,26 +92,15 @@ class _SpacesScreenState extends State<SpacesScreen> {
             TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
           ],
         ),
-        body: FutureBuilder<List<Space>>(
-            future: _getSpaces(),
-            builder: (BuildContext context, AsyncSnapshot<List<Space>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                dataService.setSpaces(snapshot.data ?? [], notify: false);
-
-                return Consumer<SpacesListModel>(builder: (context, cart, child) {
-                  return IgnorePointer(
-                      ignoring: _isFabOpen,
-                      child: _SpaceListView(
-                        expensesTrackerApi: widget.expensesTrackerApi,
-                        onDelete: (arg) => _deleteSpace(context, arg),
-                      ));
-                });
-              }
-
-              return const Center(child: Text('Empty Data'));
-            }));
+        body: Consumer<SpacesListModel>(builder: (context, cart, child) {
+          return IgnorePointer(
+              ignoring: _isFabOpen,
+              child: _SpaceListView(
+                expensesTrackerApi: widget.expensesTrackerApi,
+                onDelete: (arg) => _deleteSpace(context, arg),
+              ));
+        }),
+    );
   }
 }
 

@@ -4,10 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/expenses_list.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 
 void showEditExpenseModal(
     BuildContext context,
@@ -52,8 +52,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   /// Save the expense to the API
   void _onSave(BuildContext context) {
-    // Get DataService from the context
-    DataService dataService = Provider.of<DataService>(context, listen: false);
+    // Get SpacesListModel from the context
+    SpacesListModel dataService = Provider.of<SpacesListModel>(context, listen: false);
 
     // Take the values from the controllers
     _expense.cost = double.parse(_costController.text);
@@ -67,20 +67,20 @@ class _ExpenseFormState extends State<ExpenseForm> {
       widget.expensesTrackerApi.expenseApi
           .createExpense(widget.spaceId, _expense)
           .then((newExpense) {
-            Provider.of<ExpensesList>(context, listen: false).addExpense(newExpense);
+            Provider.of<ExpensesListModel>(context, listen: false).addExpense(newExpense);
             Navigator.pop(context);
           });
     } else {
       widget.expensesTrackerApi.expenseApi
           .patchExpense(widget.spaceId, _expense)
           .then((_) {
-            Provider.of<ExpensesList>(context, listen: false).updateExpense(_expense);
+            Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
             Navigator.pop(context);
           });
     }
   }
 
-  /// Load expense from ExpensesList
+  /// Load expense from ExpensesListModel
   void _loadExpense(BuildContext context) {
     // Check if the expense is a new one or you must update an existing one
     if (widget.expenseId == null) {
@@ -88,7 +88,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _isNewExpense = true;
     } else {
       // TODO: Show an error if the requested expense is not on the list
-      _expense = Provider.of<ExpensesList>(context).getExpenseByID(widget.expenseId!) ??
+      _expense = Provider.of<ExpensesListModel>(context).getExpenseByID(widget.expenseId!) ??
           Expense.defaultValues();
     }
 

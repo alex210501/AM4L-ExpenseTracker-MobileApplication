@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 
-class ExpensesList extends ChangeNotifier {
+class ExpensesListModel extends ChangeNotifier {
   List<Expense> _expenses = [];
 
   /// Getter for the expenses

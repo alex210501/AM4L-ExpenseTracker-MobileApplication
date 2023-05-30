@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/expenses_list.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
@@ -27,12 +27,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   void _onDeleteExpense(BuildContext context, Expense expense) {
     widget.expensesTrackerApi.expenseApi.deleteExpense(_space.id, expense.id)
-        .then((_) => Provider.of<ExpensesList>(context).removeExpenseByID(expense.id));
+        .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id));
   }
 
   @override
   Widget build(BuildContext context) {
-    final expensesList = Provider.of<ExpensesList>(context);
+    final expensesList = Provider.of<ExpensesListModel>(context);
     final spaceArg = ModalRoute.of(context)!.settings.arguments;
 
     // Check if the space is passed as parameters, if not then return to the last screen
@@ -57,7 +57,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           } else if (snapshot.connectionState == ConnectionState.done) {
             expensesList.setExpenses(snapshot.data ?? [], notify: false);
 
-            return Consumer<ExpensesList>(builder: (context, card, child) {
+            return Consumer<ExpensesListModel>(builder: (context, card, child) {
               return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense,);
             });
           }
@@ -86,7 +86,7 @@ class _ExpenseListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expenses = Provider.of<ExpensesList>(context).expenses;
+    final expenses = Provider.of<ExpensesListModel>(context).expenses;
 
     return Center(
       child: ListView.builder(

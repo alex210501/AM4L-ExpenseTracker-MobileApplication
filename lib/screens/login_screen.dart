@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _login(BuildContext context) {
     // Get the data service from context
-    final dataService = Provider.of<DataService>(context, listen: false);
+    final dataService = Provider.of<SpacesListModel>(context, listen: false);
 
     // Clear the spaces memorise from last session
     dataService?.clearSpaces();

@@ -5,7 +5,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 
 
 /// Store the global data of the application
-class DataService extends ChangeNotifier {
+class SpacesListModel extends ChangeNotifier {
   List<Space> _spaces = [];
 
   /// Getter for the spaces

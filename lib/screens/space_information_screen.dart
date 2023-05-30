@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
@@ -56,8 +56,8 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
             // Go to previous page
             Navigator.pop(context);
 
-            // Get and update DataService space
-            Provider.of<DataService>(context, listen: false).addSpace(newSpace);
+            // Get and update SpacesListModel space
+            Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
           });
     } else {
       widget.expensesTrackerApi.spaceApi.updateSpace(_space);

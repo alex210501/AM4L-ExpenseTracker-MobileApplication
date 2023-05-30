@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
 class SpacesScreen extends StatefulWidget {
@@ -27,7 +27,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     widget.expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
       // Get information from the space joined
       widget.expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
-        Provider.of<DataService>(context, listen: false).addSpace(newSpace);
+        Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
         Navigator.pop(context);
       });
     });
@@ -57,8 +57,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
   _deleteSpace(BuildContext context, Space space) {
     widget.expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
-      // Get and update the DataService
-      Provider.of<DataService>(context, listen: false).removeSpaceBySpaceID(space.id);
+      // Get and update the SpacesListModel
+      Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(space.id);
     });
   }
 
@@ -76,7 +76,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dataService = Provider.of<DataService>(context, listen: false);
+    final dataService = Provider.of<SpacesListModel>(context, listen: false);
 
     return Scaffold(
         appBar: AppBar(
@@ -100,7 +100,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
               } else if (snapshot.connectionState == ConnectionState.done) {
                 dataService.setSpaces(snapshot.data ?? [], notify: false);
 
-                return Consumer<DataService>(builder: (context, cart, child) {
+                return Consumer<SpacesListModel>(builder: (context, cart, child) {
                   return IgnorePointer(
                       ignoring: _isFabOpen,
                       child: _SpaceListView(
@@ -138,10 +138,12 @@ class _SpaceListViewState extends State<_SpaceListView> {
 
   @override
   Widget build(BuildContext context) {
-    final spaces = Provider.of<DataService>(context, listen: false).spaces;
+    final spaces = Provider.of<SpacesListModel>(context, listen: false).spaces;
 
     return Center(
-        child: ListView.builder(
+        child: RefreshIndicator(
+          onRefresh: () => Future.delayed(Duration(seconds: 2), () => print('refresh bro')),
+          child: ListView.builder(
             itemCount: spaces.length,
             itemBuilder: (context, index) {
               return Dismissible(
@@ -174,6 +176,6 @@ class _SpaceListViewState extends State<_SpaceListView> {
                   ),
                 ),
               );
-            }));
+            })));
   }
 }

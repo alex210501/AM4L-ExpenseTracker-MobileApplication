@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/expenses_list.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/data_service.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 
@@ -26,8 +26,8 @@ class ExpenseInformationScreen extends StatelessWidget {
     _expenseId = arguments['expenseId'] ?? '';
 
     // Load expense
-    _space = Provider.of<DataService>(context, listen: false).getSpaceByID(_spaceId)!;
-    _expense = Provider.of<ExpensesList>(context, listen: false).getExpenseByID(_expenseId)!;
+    _space = Provider.of<SpacesListModel>(context, listen: false).getSpaceByID(_spaceId)!;
+    _expense = Provider.of<ExpensesListModel>(context, listen: false).getExpenseByID(_expenseId)!;
   }
 
   void _onEdit(BuildContext context) {
@@ -38,7 +38,7 @@ class ExpenseInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     _loadFromArguments(context);
 
-    return Consumer<ExpensesList>(builder: (context, card, child) {
+    return Consumer<ExpensesListModel>(builder: (context, card, child) {
       return Scaffold(
         appBar: AppBar(
           title: Text(_expense.description),

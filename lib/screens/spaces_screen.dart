@@ -104,6 +104,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
                   return IgnorePointer(
                       ignoring: _isFabOpen,
                       child: _SpaceListView(
+                        expensesTrackerApi: widget.expensesTrackerApi,
                         onDelete: (arg) => _deleteSpace(context, arg),
                       ));
                 });
@@ -116,10 +117,12 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
 @immutable
 class _SpaceListView extends StatefulWidget {
+  final ExpensesTrackerApi expensesTrackerApi;
   final void Function(Space) onDelete;
 
   const _SpaceListView({
     super.key,
+    required this.expensesTrackerApi,
     required this.onDelete,
   });
 
@@ -136,13 +139,22 @@ class _SpaceListViewState extends State<_SpaceListView> {
     Navigator.pushNamed(context, '/space/expenses', arguments: space);
   }
 
+  /// Function to refresh the spaces
+  Future<void> _onRefresh(BuildContext context) async {
+    // Get SpacesListModel from context
+    final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
+
+    // Add spaces to SpacesListModel
+    spacesListModel.setSpaces(await widget.expensesTrackerApi.spaceApi.getSpaces());
+  }
+
   @override
   Widget build(BuildContext context) {
     final spaces = Provider.of<SpacesListModel>(context, listen: false).spaces;
 
     return Center(
         child: RefreshIndicator(
-          onRefresh: () => Future.delayed(Duration(seconds: 2), () => print('refresh bro')),
+          onRefresh: () => _onRefresh(context),
           child: ListView.builder(
             itemCount: spaces.length,
             itemBuilder: (context, index) {

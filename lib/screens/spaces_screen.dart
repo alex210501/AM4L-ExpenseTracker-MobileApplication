@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
@@ -132,11 +134,22 @@ class _SpaceListViewState extends State<_SpaceListView> {
     });
   }
 
-  _goToSpaceInfo(BuildContext context, Space space) {
-    Navigator.pushNamed(context, '/space/info', arguments: space);
+  /// Load categories from API
+  Future<List<Category>> _loadCategories(BuildContext context, Space space) {
+    return widget.expensesTrackerApi.categoryApi.getCategories(space.id);
   }
 
-  _goToExpensesScreen(BuildContext context, Space space) {
+  void _goToSpaceInfo(BuildContext context, Space space) {
+    // Load the categories from the API
+    _loadCategories(context, space).then((categories) {
+      Provider.of<CategoriesListModel>(context, listen: false).setCategories(categories);
+
+      // Go to SpaceInformationScreen
+      Navigator.pushNamed(context, '/space/info', arguments: space);
+    });
+  }
+
+  void _goToExpensesScreen(BuildContext context, Space space) {
     _setLoading(true);
 
     widget.expensesTrackerApi.expenseApi.getExpenses(space.id).then((expenses) {
@@ -145,8 +158,13 @@ class _SpaceListViewState extends State<_SpaceListView> {
       // Set the expenses
       Provider.of<ExpensesListModel>(context, listen: false).setExpenses(expenses);
 
-      // Go to ExpensesScreen
-      Navigator.pushNamed(context, '/space/expenses', arguments: space);
+      // Load the categories from the API
+      _loadCategories(context, space).then((categories) {
+        Provider.of<CategoriesListModel>(context, listen: false).setCategories(categories);
+
+        // Go to ExpensesScreen
+        Navigator.pushNamed(context, '/space/expenses', arguments: space);
+      });
     });
   }
 

@@ -1,5 +1,6 @@
 import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/category_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expense_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/space_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/user_api.dart';
@@ -15,6 +16,7 @@ Map<String, String> appJsonHeader = {"Content-Type": "application/json"};
 class ExpensesTrackerApi {
   String token = '';
   final String uri = hostUri;
+  final categoryApi = CategoryApi(uri: hostUri, appJsonHeader: appJsonHeader);
   final expenseApi = ExpenseApi(uri: hostUri, appJsonHeader: appJsonHeader);
   final spaceApi = SpaceApi(uri: hostUri, appJsonHeader: appJsonHeader);
   final userApi = UserApi(uri: hostUri, appJsonHeader: appJsonHeader);

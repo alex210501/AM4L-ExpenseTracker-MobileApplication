@@ -3,9 +3,12 @@ import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
@@ -95,6 +98,22 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
         const SnackBar(content: Text('Space ID copied to the clipboard!')));
   }
 
+  /// Add a new category
+  void _addCategoryToSpace(BuildContext context, String spaceId, String categoryTitle) {
+    widget.expensesTrackerApi.categoryApi.createCategory(spaceId, categoryTitle)
+        .then((category) {
+          Provider.of<CategoriesListModel>(context, listen: false).addCategory(category);
+        });
+  }
+
+  /// Delete a category
+  void _deleteCategoryFromSpace(BuildContext context, String spaceId, String categoryId) {
+    widget.expensesTrackerApi.categoryApi.removeCategory(spaceId, categoryId)
+        .then((_) {
+          Provider.of<CategoriesListModel>(context, listen: false).removeCategoryById(categoryId);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     _loadSpaceFromRouteArgument(context);
@@ -142,7 +161,14 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
               space: _space,
               onDeleteCollaborator: _deleteCollaboratorFromSpace,
               onAddCollaborator: _addCollaboratorToSpace,
-            )
+            ),
+            Consumer<CategoriesListModel>(builder: (context, card, child) {
+              return _ListViewCategories(
+                space: _space,
+                onAddCategory: _addCategoryToSpace,
+                onDeleteCategory: _deleteCategoryFromSpace,
+              );
+            })
           ],
         ),
       ),
@@ -184,7 +210,7 @@ class _ListViewCollaborator extends StatelessWidget {
   final void Function(BuildContext, String, String) onAddCollaborator;
 
   /// Default constructor
-  _ListViewCollaborator({
+  const _ListViewCollaborator({
     required this.space,
     required this.onDeleteCollaborator,
     required this.onAddCollaborator,
@@ -210,7 +236,7 @@ class _ListViewCollaborator extends StatelessWidget {
                         collaborator: collaborators[index],
                         onDelete: onDeleteCollaborator,
                       )
-                    : _AddCollaboratorTile(
+                    : _AddTile(
                         space: space,
                         onAdd: onAddCollaborator,
                       );
@@ -221,13 +247,13 @@ class _ListViewCollaborator extends StatelessWidget {
   }
 }
 
-class _AddCollaboratorTile extends StatelessWidget {
+class _AddTile extends StatelessWidget {
   final Space space;
   final void Function(BuildContext, String, String) onAdd;
   final TextEditingController _userToAddController = TextEditingController();
 
   /// Default constructor
-  _AddCollaboratorTile({
+  _AddTile({
     required this.space,
     required this.onAdd,
   });
@@ -241,6 +267,81 @@ class _AddCollaboratorTile extends StatelessWidget {
       trailing: IconButton(
         onPressed: () => onAdd(context, space.id, _userToAddController.text),
         icon: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+@immutable
+class _ListViewCategories extends StatelessWidget {
+  final Space space;
+  final void Function(BuildContext, String, String) onAddCategory;
+  final void Function(BuildContext, String, String) onDeleteCategory;
+
+  _ListViewCategories({
+    super.key,
+    required this.space,
+    required this.onAddCategory,
+    required this.onDeleteCategory,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final categories = Provider.of<CategoriesListModel>(context, listen: false).categories;
+    
+    return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Categories'),
+            Flexible(
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: categories.length + 1,
+                  itemBuilder: (context, index) {
+                    return (index != categories.length)
+                        ? CategoryCard(
+                      space: space,
+                      category: categories[index],
+                      onDelete: onDeleteCategory,
+                    )
+                        : _AddTile(
+                      space: space,
+                      onAdd: onAddCategory,
+                    );
+                  }),
+            )
+          ],
+        ));
+  }
+}
+
+class CategoryCard extends StatelessWidget {
+  final Space space;
+  final Category category;
+  final void Function(BuildContext, String, String) onDelete;
+
+  /// Constructor
+  const CategoryCard({
+    super.key,
+    required this.space,
+    required this.category,
+    required this.onDelete,
+});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: Text(category.title),
+        trailing: IconButton(
+          onPressed: () => onDelete(
+              context,
+              space.id,
+              category.id,
+          ),
+          icon: const Icon(Icons.delete),
+        ),
       ),
     );
   }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/expenses_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/expense_information_screen.dart';
@@ -10,7 +12,6 @@ import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart'
 import 'package:am4l_expensetracker_mobileapplication/screens/space_information_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +29,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => SpacesListModel()),
+          ChangeNotifierProvider(create: (context) => CategoriesListModel()),
           ChangeNotifierProvider(create: (context) => ExpensesListModel()),
+          ChangeNotifierProvider(create: (context) => SpacesListModel()),
         ],
         child: MaterialApp(
             title: 'Expense Tracker',

@@ -10,6 +10,7 @@ import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_trac
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode_dialog.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -53,48 +54,39 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
     // Create or update the space
     if (isNewSpace) {
-      widget.expensesTrackerApi.spaceApi
-          .createSpace(_space)
-          .then((newSpace) {
-            // Go to previous page
-            Navigator.pop(context);
+      widget.expensesTrackerApi.spaceApi.createSpace(_space).then((newSpace) {
+        // Go to previous page
+        Navigator.pop(context);
 
-            // Get and update SpacesListModel space
-            Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
-          });
+        // Get and update SpacesListModel space
+        Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
+      });
     } else {
-      widget.expensesTrackerApi.spaceApi.updateSpace(_space)
-          .then((_) {
-            // Update the space
-            Provider.of<SpacesListModel>(context, listen: false).updateSpace(_space);
+      widget.expensesTrackerApi.spaceApi.updateSpace(_space).then((_) {
+        // Update the space
+        Provider.of<SpacesListModel>(context, listen: false).updateSpace(_space);
 
-            // Close the keyboard
-            FocusScope.of(context).unfocus();
+        // Close the keyboard
+        FocusScope.of(context).unfocus();
 
-            // Show SnackBar
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Space information updated!')));
+        // Show SnackBar
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Space information updated!')));
       });
     }
   }
 
   /// Add a collaborator to a space
-  void _addCollaboratorToSpace(
-      BuildContext context, String spaceId, String collaborator) {
-    widget.expensesTrackerApi.userSpaceApi
-        .addUser(spaceId, collaborator)
-        .then((_) {
+  void _addCollaboratorToSpace(BuildContext context, String spaceId, String collaborator) {
+    widget.expensesTrackerApi.userSpaceApi.addUser(spaceId, collaborator).then((_) {
       _space.collaborators.add(collaborator);
       setState(() {});
     });
   }
 
   /// Delete a collaborator from a space
-  void _deleteCollaboratorFromSpace(
-      BuildContext context, String spaceId, String collaborator) {
-    widget.expensesTrackerApi.userSpaceApi
-        .deleteUser(spaceId, collaborator)
-        .then((_) {
+  void _deleteCollaboratorFromSpace(BuildContext context, String spaceId, String collaborator) {
+    widget.expensesTrackerApi.userSpaceApi.deleteUser(spaceId, collaborator).then((_) {
       _space.collaborators.remove(collaborator);
       setState(() {});
     });
@@ -105,24 +97,22 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     Clipboard.setData(ClipboardData(text: _space.id));
 
     // Show a SnackBar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Space ID copied to the clipboard!')));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Space ID copied to the clipboard!')));
   }
 
   /// Add a new category
   void _addCategoryToSpace(BuildContext context, String spaceId, String categoryTitle) {
-    widget.expensesTrackerApi.categoryApi.createCategory(spaceId, categoryTitle)
-        .then((category) {
-          Provider.of<CategoriesListModel>(context, listen: false).addCategory(category);
-        });
+    widget.expensesTrackerApi.categoryApi.createCategory(spaceId, categoryTitle).then((category) {
+      Provider.of<CategoriesListModel>(context, listen: false).addCategory(category);
+    });
   }
 
   /// Delete a category
   void _deleteCategoryFromSpace(BuildContext context, String spaceId, String categoryId) {
-    widget.expensesTrackerApi.categoryApi.removeCategory(spaceId, categoryId)
-        .then((_) {
-          Provider.of<CategoriesListModel>(context, listen: false).removeCategoryById(categoryId);
-        });
+    widget.expensesTrackerApi.categoryApi.removeCategory(spaceId, categoryId).then((_) {
+      Provider.of<CategoriesListModel>(context, listen: false).removeCategoryById(categoryId);
+    });
   }
 
   @override
@@ -133,33 +123,38 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
       appBar: AppBar(
         title: const Text("Space"),
         actions: [
+          IconButton(
+              onPressed: () => showQrCodeDialog(context, _space.id),
+              icon: const Icon(Icons.qr_code_rounded, color: Colors.white)),
           TextButton(
             onPressed: () => _saveSpace(context),
-            child: const Text(
-              'Save',
-              style: TextStyle(color: Colors.white),
-            ),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
       body: Center(
         child: Column(
           children: [
-            !isNewSpace ?
-            Row(
-                children: [
-                  Flexible(
-                    flex: 4,
-                    child: Text('ID: ${_space.id}', overflow: TextOverflow.ellipsis,),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: IconButton(
-                      onPressed: () => _copySpaceIdToClipboard(context),
-                      icon: const Icon(Icons.content_copy),
-                  ),),
-                ],
-            ) : Container(),
+            !isNewSpace
+                ? Row(
+                    children: [
+                      Flexible(
+                        flex: 4,
+                        child: Text(
+                          'ID: ${_space.id}',
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Flexible(
+                        flex: 1,
+                        child: IconButton(
+                          onPressed: () => _copySpaceIdToClipboard(context),
+                          icon: const Icon(Icons.content_copy),
+                        ),
+                      ),
+                    ],
+                  )
+                : Container(),
             _SpaceInfoTextForm(
               title: 'Name',
               controller: _nameController,
@@ -193,8 +188,7 @@ class _SpaceInfoTextForm extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
 
-  const _SpaceInfoTextForm(
-      {required this.title, required this.controller, this.validator});
+  const _SpaceInfoTextForm({required this.title, required this.controller, this.validator});
 
   @override
   Widget build(BuildContext context) {
@@ -299,31 +293,31 @@ class _ListViewCategories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final categories = Provider.of<CategoriesListModel>(context, listen: false).categories;
-    
+
     return Center(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Categories'),
-            Flexible(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: categories.length + 1,
-                  itemBuilder: (context, index) {
-                    return (index != categories.length)
-                        ? CategoryCard(
-                      space: space,
-                      category: categories[index],
-                      onDelete: onDeleteCategory,
-                    )
-                        : _AddTile(
-                      space: space,
-                      onAdd: onAddCategory,
-                    );
-                  }),
-            )
-          ],
-        ));
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Text('Categories'),
+        Flexible(
+          child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: categories.length + 1,
+              itemBuilder: (context, index) {
+                return (index != categories.length)
+                    ? CategoryCard(
+                        space: space,
+                        category: categories[index],
+                        onDelete: onDeleteCategory,
+                      )
+                    : _AddTile(
+                        space: space,
+                        onAdd: onAddCategory,
+                      );
+              }),
+        )
+      ],
+    ));
   }
 }
 
@@ -338,7 +332,7 @@ class CategoryCard extends StatelessWidget {
     required this.space,
     required this.category,
     required this.onDelete,
-});
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -347,9 +341,9 @@ class CategoryCard extends StatelessWidget {
         title: Text(category.title),
         trailing: IconButton(
           onPressed: () => onDelete(
-              context,
-              space.id,
-              category.id,
+            context,
+            space.id,
+            category.id,
           ),
           icon: const Icon(Icons.delete),
         ),

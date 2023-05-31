@@ -123,9 +123,10 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
       appBar: AppBar(
         title: const Text("Space"),
         actions: [
-          IconButton(
-              onPressed: () => showQrCodeDialog(context, _space.id),
-              icon: const Icon(Icons.qr_code_rounded, color: Colors.white)),
+          if (!isNewSpace)
+            IconButton(
+                onPressed: () => showQrCodeDialog(context, _space.id),
+                icon: const Icon(Icons.qr_code_rounded, color: Colors.white)),
           TextButton(
             onPressed: () => _saveSpace(context),
             child: const Text('Save', style: TextStyle(color: Colors.white)),

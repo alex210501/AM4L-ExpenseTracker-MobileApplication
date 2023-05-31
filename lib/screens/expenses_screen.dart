@@ -7,7 +7,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
-
+import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode_dialog.dart';
 
 class ExpensesScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -22,7 +22,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Space _space = Space.defaultValue();
 
   void _onDeleteExpense(BuildContext context, Expense expense) {
-    widget.expensesTrackerApi.expenseApi.deleteExpense(_space.id, expense.id)
+    widget.expensesTrackerApi.expenseApi
+        .deleteExpense(_space.id, expense.id)
         .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id));
   }
 
@@ -40,13 +41,19 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_space.name),
+        actions: [
+          IconButton(
+            onPressed: () => showQrCodeDialog(context, _space.id),
+            icon: const Icon(Icons.qr_code_rounded, color: Colors.white),
+          ),
+        ],
       ),
       floatingActionButton: IconButton(
         onPressed: () => showEditExpenseModal(context, _space, widget.expensesTrackerApi),
         icon: const Icon(Icons.add),
       ),
       body: Consumer<ExpensesListModel>(builder: (context, card, child) {
-        return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense,);
+        return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
       }),
     );
   }
@@ -56,7 +63,7 @@ class _ExpenseListView extends StatelessWidget {
   final spaceId;
   final void Function(BuildContext, Expense) onDelete;
 
-  const _ExpenseListView({ required this.spaceId, required this.onDelete });
+  const _ExpenseListView({required this.spaceId, required this.onDelete});
 
   void _onExpense(BuildContext context, Expense expense) {
     Map<String, String> arguments = {

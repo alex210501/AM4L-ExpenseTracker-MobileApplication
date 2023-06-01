@@ -34,9 +34,13 @@ class _SpacesScreenState extends State<SpacesScreen> {
       // Get information from the space joined
       widget.expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
         Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
-        Navigator.pop(context);
       });
     });
+  }
+
+  _onJoinSpaceDialog(BuildContext context, String spaceId) {
+    _joinSpace(context, spaceId);
+    Navigator.pop(context);
   }
 
   void _openDialog(BuildContext context) {
@@ -53,7 +57,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
             ),
             actions: [
               ElevatedButton(
-                onPressed: () => _joinSpace(context, spaceId),
+                onPressed: () => _onJoinSpaceDialog(context, spaceId),
                 child: const Text('Join'),
               ),
             ],
@@ -72,6 +76,14 @@ class _SpacesScreenState extends State<SpacesScreen> {
     Navigator.pushNamed(context, '/space/info', arguments: null);
   }
 
+  _goToQrScanner(BuildContext context) {
+    Navigator.pushNamed(context, '/space/qrcode').then((spaceId) {
+      if (spaceId != null) {
+        _joinSpace(context, spaceId as String);
+      }
+    });
+  }
+
   _onFabOpen(BuildContext context) {
     setState(() => _isFabOpen = true);
   }
@@ -82,8 +94,6 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dataService = Provider.of<SpacesListModel>(context, listen: false);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Spaces'),
@@ -96,6 +106,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
         children: [
           TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
           TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
+          TextButton(onPressed: () => _goToQrScanner(context), child: const Text('Scan QR')),
         ],
       ),
       body: Consumer<SpacesListModel>(builder: (context, cart, child) {

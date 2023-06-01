@@ -11,6 +11,7 @@ import 'package:am4l_expensetracker_mobileapplication/screens/expense_informatio
 import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/space_information_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
+import 'package:am4l_expensetracker_mobileapplication/screens/qrcode_scanner_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 
 void main() {
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
                   ExpensesScreen(expensesTrackerApi: expensesTrackerApi),
               '/space/expense/info': (context) => ExpenseInformationScreen(
                   expensesTrackerApi: expensesTrackerApi),
+              '/space/qrcode': (context) => QrCodeScannerScreen(),
             }));
   }
 }

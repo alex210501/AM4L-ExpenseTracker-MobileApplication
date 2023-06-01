@@ -10,6 +10,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/services/fab_controller.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
@@ -23,7 +24,7 @@ class SpacesScreen extends StatefulWidget {
 }
 
 class _SpacesScreenState extends State<SpacesScreen> {
-  bool _isFabOpen = false;
+  final FabController _fabController = FabController();
 
   Future<List<Space>> _getSpaces() async {
     return await widget.expensesTrackerApi.spaceApi.getSpaces();
@@ -41,6 +42,11 @@ class _SpacesScreenState extends State<SpacesScreen> {
   _onJoinSpaceDialog(BuildContext context, String spaceId) {
     _joinSpace(context, spaceId);
     Navigator.pop(context);
+
+    // Close the FAB
+    if (_fabController.close != null) {
+      _fabController.close!();
+    }
   }
 
   void _openDialog(BuildContext context) {
@@ -74,6 +80,11 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
   _goToSpaceInfo(BuildContext context) {
     Navigator.pushNamed(context, '/space/info', arguments: null);
+
+    // Close the FAB
+    if (_fabController.close != null) {
+      _fabController.close!();
+    }
   }
 
   _goToQrScanner(BuildContext context) {
@@ -82,14 +93,11 @@ class _SpacesScreenState extends State<SpacesScreen> {
         _joinSpace(context, spaceId as String);
       }
     });
-  }
 
-  _onFabOpen(BuildContext context) {
-    setState(() => _isFabOpen = true);
-  }
-
-  _onFabClose(BuildContext context) {
-    setState(() => _isFabOpen = false);
+    // Close the FAB
+    if (_fabController.close != null) {
+      _fabController.close!();
+    }
   }
 
   @override
@@ -99,10 +107,11 @@ class _SpacesScreenState extends State<SpacesScreen> {
         title: const Text('Spaces'),
       ),
       floatingActionButton: ExpandableVerticalFAB(
+        fabController: _fabController,
         distance: 50.0,
         offsetY: 0.0,
-        onOpen: _onFabOpen,
-        onClose: _onFabClose,
+        onOpen: (context) => setState(() {}),
+        onClose: (context) => setState(() {}),
         children: [
           TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
           TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
@@ -111,11 +120,12 @@ class _SpacesScreenState extends State<SpacesScreen> {
       ),
       body: Consumer<SpacesListModel>(builder: (context, cart, child) {
         return IgnorePointer(
-            ignoring: _isFabOpen,
+            ignoring: _fabController.getState != null ? _fabController.getState!() : false,
             child: _SpaceListView(
               expensesTrackerApi: widget.expensesTrackerApi,
               onDelete: (arg) => _deleteSpace(context, arg),
-            ));
+            ),
+        );
       }),
     );
   }

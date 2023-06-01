@@ -2,11 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/services/fab_controller.dart';
+
 const defaultDistance = 50.0;
 const defaultOffsetY = 50.0;
 const defaultOffsetX = 10.0;
 
 class ExpandableVerticalFAB extends StatefulWidget {
+  final FabController fabController;
   final double distance;
   final double offsetY;
   final double offsetX;
@@ -17,6 +20,7 @@ class ExpandableVerticalFAB extends StatefulWidget {
   const ExpandableVerticalFAB({
     super.key,
     required this.children,
+    required this.fabController,
     this.distance = defaultDistance,
     this.offsetY = defaultOffsetY,
     this.offsetX = defaultOffsetX,
@@ -31,14 +35,36 @@ class ExpandableVerticalFAB extends StatefulWidget {
 class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
   bool _isOpen = false;
 
+  void _open(BuildContext context) {
+    setState(() {
+      _isOpen = true;
+
+      // Execute the callback
+      if (widget.onOpen != null) {
+        widget.onOpen!(context);
+      }
+    });
+  }
+
+  void _close(BuildContext context) {
+    setState(() {
+      _isOpen = false;
+
+      // Execute the callback
+      if (widget.onClose != null) {
+        widget.onClose!(context);
+      }
+    });
+  }
+
   void _toggle(BuildContext context) {
     setState(() {
       _isOpen = !_isOpen;
 
       if (_isOpen && widget.onOpen != null) {
-        widget.onOpen!(context);
+        _open(context);
       } else if (widget.onClose != null) {
-        widget.onClose!(context);
+        _close(context);
       }
     });
   }
@@ -80,6 +106,12 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
 
   @override
   Widget build(BuildContext context) {
+    // Set the controller function
+    widget.fabController.open = () => _open(context);
+    widget.fabController.close = () => _close(context);
+    widget.fabController.toggle = () => _toggle(context);
+    widget.fabController.getState = () => _isOpen;
+
     return BackdropFilter(
       filter: ImageFilter.blur(
         sigmaX: _isOpen ? 5 : 0,

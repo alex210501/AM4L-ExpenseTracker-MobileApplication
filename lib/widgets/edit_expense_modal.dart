@@ -11,6 +11,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/floatnumber_formfield.dart';
 
 Future<Expense?> showEditExpenseModal(
     BuildContext context, Space space, ExpensesTrackerApi expensesTrackerApi,
@@ -61,6 +62,11 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   /// Save the expense to the API
   void _onSave(BuildContext context) {
+    // Check if the form is valid, return if its not
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     // Get SpacesListModel from the context
     SpacesListModel dataService = Provider.of<SpacesListModel>(context, listen: false);
 
@@ -169,11 +175,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
                       return (text == null || text.isEmpty) ? "Description cannot be empty!" : null;
                     },
                   ),
-                  TextFormField(
+                  FloatNumberFormField(
                     controller: _costController,
-                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(hintText: "Cost"),
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                   _CategoryDropdownButton(
                     dropdownValue: _category,

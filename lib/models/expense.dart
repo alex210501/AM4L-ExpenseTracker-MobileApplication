@@ -2,7 +2,7 @@ class Expense {
   final String id;
   double cost;
   String description;
-  String date;
+  DateTime date;
   String? category;
   final String paidBy;
 
@@ -18,7 +18,7 @@ class Expense {
       : id = jsonData['expense_id'] ?? '',
         cost = (jsonData['expense_cost'] ?? 0.0).toDouble(),
         description = jsonData['expense_description'] ?? '',
-        date = jsonData['expense_date'] ?? '',
+        date = DateTime.parse(jsonData['expense_date'] ?? ''),
         category = jsonData['expense_category'],
         paidBy = jsonData['expense_paid_by'] ?? '';
 
@@ -26,7 +26,7 @@ class Expense {
       : id = '',
         cost = 0.0,
         description = '',
-        date = '',
+        date = DateTime.now(),
         category = '',
         paidBy = '';
 }

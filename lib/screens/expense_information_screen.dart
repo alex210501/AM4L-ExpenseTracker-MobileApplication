@@ -1,9 +1,8 @@
-import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
@@ -55,6 +54,19 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
     }
   }
 
+  /// Format a DateTime into 'dd/MM/yyyy at HH:mm'
+  String _formatDate(DateTime dateTime) {
+    // Get the following fields
+    final String day = dateTime.day.toString().padLeft(2, '0');
+    final String month = dateTime.month.toString().padLeft(2, '0');
+    final String year = dateTime.year.toString().padLeft(4, '0');
+    final String hours = dateTime.hour.toString().padLeft(2, '0');
+    final String minutes = dateTime.minute.toString().padLeft(2, '0');
+
+    // Return the formatted string
+    return '$day/$month/$year at $hours:$minutes';
+  }
+
   @override
   Widget build(BuildContext context) {
     // Load arguments passed to the route
@@ -81,7 +93,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
               Text('Description: ${_expense.description}'),
               Text('Cost: ${_expense.cost}€'),
               Text('Author: ${_expense.paidBy}'),
-              Text('Date: ${_expense.date}'),
+              Text('Date: ${_formatDate(_expense.date)}'),
               Text('Category: ${category?.title ?? 'None'}'),
             ],
           ),

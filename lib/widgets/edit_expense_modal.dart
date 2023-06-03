@@ -75,7 +75,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     // If the expense is new then create it, otherwise you update it
     if (_isNewExpense) {
       // Set the date to now
-      _expense.date = DateTime.now().toString();
+      _expense.date = DateTime.now();
 
       widget.expensesTrackerApi.expenseApi
           .createExpense(widget.spaceId, _expense)

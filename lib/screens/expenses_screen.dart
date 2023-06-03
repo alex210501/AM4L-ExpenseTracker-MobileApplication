@@ -1,3 +1,4 @@
+import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -29,7 +30,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final expensesList = Provider.of<ExpensesListModel>(context);
     final spaceArg = ModalRoute.of(context)!.settings.arguments;
 
     // Check if the space is passed as parameters, if not then return to the last screen
@@ -48,10 +48,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: Consumer<ExpensesListModel>(builder: (context, card, child) {
+        return ExpensesBottomAppBar();
+      }),
       floatingActionButton: IconButton(
         onPressed: () => showEditExpenseModal(context, _space, widget.expensesTrackerApi),
         icon: const Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Consumer<ExpensesListModel>(builder: (context, card, child) {
         return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
       }),
@@ -104,6 +108,63 @@ class _ExpenseListView extends StatelessWidget {
                 ),
               ));
         },
+      ),
+    );
+  }
+}
+
+/// Bottom bar that display the information about the your total cost
+/// and the total cost of the entire expenses
+class ExpensesBottomAppBar extends StatelessWidget {
+  /// Constructor
+  const ExpensesBottomAppBar({super.key});
+
+  /// Compute the total expenses
+  double _getTotalExpenses(List<Expense> expenses, { String? username }) {
+    double sum = 0.0;
+
+    for (var element in expenses) {
+      if ((username == null) || (username == element.paidBy)) {
+        sum += element.cost;
+      }
+    }
+
+    return sum;
+  }
+
+  /// Compute the total expenses of the current user
+  double _getTotalUserExpenses(BuildContext context, List<Expense> expenses) {
+    final username = Provider.of<CredentialsModel>(context, listen: false).username;
+
+    return _getTotalExpenses(expenses, username: username);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final expenses = Provider.of<ExpensesListModel>(context, listen: false).expenses;
+
+    return BottomAppBar(
+      shape: const CircularNotchedRectangle(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            height: 50,
+            child: Column(
+              children: [
+                Text('${_getTotalExpenses(expenses).toString()} €'),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 50,
+            child: Column(
+              children: [
+                Text('${_getTotalUserExpenses(context, expenses).toString()} €'),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

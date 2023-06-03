@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 
+import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
@@ -58,6 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
       widget.expensesTrackerApi.spaceApi.getSpaces().then((spaces) {
         spacesListModel.setSpaces(spaces);
         Navigator.pushNamed(context, '/space');
+
+        // Set the credential to the current username
+        Provider.of<CredentialsModel>(context, listen: false).username = username;
 
         _setLoading(false);
       });

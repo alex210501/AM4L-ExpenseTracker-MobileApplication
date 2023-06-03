@@ -27,7 +27,7 @@ class ExpensesListModel extends ChangeNotifier {
 
   /// Add a new expense to the list
   void addExpense(Expense newExpense, { bool notify = true }) {
-    _expenses.add(newExpense);
+    _expenses.insert(0, newExpense);
 
     if (notify) {
       notifyListeners();

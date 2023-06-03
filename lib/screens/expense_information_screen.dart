@@ -8,6 +8,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 
 class ExpenseInformationScreen extends StatefulWidget {
@@ -54,19 +55,6 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
     }
   }
 
-  /// Format a DateTime into 'dd/MM/yyyy at HH:mm'
-  String _formatDate(DateTime dateTime) {
-    // Get the following fields
-    final String day = dateTime.day.toString().padLeft(2, '0');
-    final String month = dateTime.month.toString().padLeft(2, '0');
-    final String year = dateTime.year.toString().padLeft(4, '0');
-    final String hours = dateTime.hour.toString().padLeft(2, '0');
-    final String minutes = dateTime.minute.toString().padLeft(2, '0');
-
-    // Return the formatted string
-    return '$day/$month/$year at $hours:$minutes';
-  }
-
   @override
   Widget build(BuildContext context) {
     // Load arguments passed to the route
@@ -93,7 +81,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
               Text('Description: ${_expense.description}'),
               Text('Cost: ${_expense.cost}€'),
               Text('Author: ${_expense.paidBy}'),
-              Text('Date: ${_formatDate(_expense.date)}'),
+              Text('Date: ${formatDate(_expense.date)}'),
               Text('Category: ${category?.title ?? 'None'}'),
             ],
           ),

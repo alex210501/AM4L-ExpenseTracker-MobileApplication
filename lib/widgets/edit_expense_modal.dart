@@ -10,6 +10,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/floatnumber_formfield.dart';
 
@@ -71,7 +72,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     SpacesListModel dataService = Provider.of<SpacesListModel>(context, listen: false);
 
     // Take the values from the controllers
-    _expense.cost = double.parse(_costController.text);
+    _expense.cost = roundDoubleToDecimals(double.parse(_costController.text));
     _expense.description = _descriptionController.text;
     _expense.category = _category?.id;
 

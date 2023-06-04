@@ -1,8 +1,8 @@
-import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
@@ -23,6 +23,19 @@ class ExpensesScreen extends StatefulWidget {
 class _ExpensesScreenState extends State<ExpensesScreen> {
   bool _showQrCode = false;
   Space _space = Space.defaultValue();
+
+  Future<void> _onRefresh(BuildContext context) async {
+    final expensesListModel = Provider.of<ExpensesListModel>(context, listen: false);
+
+    // Get expenses from API
+    final expenses = await widget.expensesTrackerApi.expenseApi.getExpenses(_space.id);
+
+    // Refresh expenses
+    expensesListModel.setExpenses(expenses);
+    widget.expensesTrackerApi.expenseApi.getExpenses(_space.id).then((expenses) {
+      ;
+    }).catchError((err) => showErrorDialog(context, err));
+  }
 
   void _onDeleteExpense(BuildContext context, Expense expense) {
     widget.expensesTrackerApi.expenseApi
@@ -60,19 +73,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Stack(
-          children: [
-            Consumer<ExpensesListModel>(builder: (context, card, child) {
-              return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
-            }),
-            if (_showQrCode)
-              QrCode(
-                qrCodeMessage: _space.id,
-                onPressed: (_) => setState(() => _showQrCode = false),
-              ),
-          ],
+      body: RefreshIndicator(
+        onRefresh: () => _onRefresh(context),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Stack(
+            children: [
+              Consumer<ExpensesListModel>(builder: (context, card, child) {
+                return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
+              }),
+              if (_showQrCode)
+                QrCode(
+                  qrCodeMessage: _space.id,
+                  onPressed: (_) => setState(() => _showQrCode = false),
+                ),
+            ],
+          ),
         ),
       ),
     );

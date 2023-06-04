@@ -4,7 +4,6 @@ import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dar
 
 const expensePath = 'space/:spaceId/expense';
 
-
 /// Class that manage the request for Expense
 class ExpenseApi {
   final String uri;
@@ -16,18 +15,16 @@ class ExpenseApi {
   /// Get expenses from a space
   Future<List<Expense>> getExpenses(String spaceId) async {
     ApiRequest apiRequest = ApiRequest(
-        uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}',
-        method: HttpMethod.get,
-        headers: appJsonHeader,
+      uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}',
+      method: HttpMethod.get,
+      headers: appJsonHeader,
     );
 
     // Send HTTP request
     List<dynamic> response = await sendHttpRequest(apiRequest);
 
     // Convert JSON into Expenses
-    return response
-        .map((value) => Expense.fromJson(value as Map<String, dynamic>))
-        .toList();
+    return response.map((value) => Expense.fromJson(value as Map<String, dynamic>)).toList();
   }
 
   /// Create an expense to the API
@@ -38,7 +35,6 @@ class ExpenseApi {
       headers: appJsonHeader,
       body: {
         'expense_cost': expense.cost,
-        'expense_date': expense.date,
         'expense_description': expense.description,
       },
     );
@@ -65,15 +61,14 @@ class ExpenseApi {
   /// Update an expense
   Future<void> patchExpense(String spaceId, Expense expense) async {
     ApiRequest apiRequest = ApiRequest(
-      uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}/${expense.id}',
-      method: HttpMethod.patch,
-      headers: appJsonHeader,
-      body: {
-        'expense_description': expense.description,
-        'expense_cost': expense.cost,
-        'expense_category': expense.category,
-      }
-    );
+        uri: '$uri/${expensePath.replaceAll(':spaceId', spaceId)}/${expense.id}',
+        method: HttpMethod.patch,
+        headers: appJsonHeader,
+        body: {
+          'expense_description': expense.description,
+          'expense_cost': expense.cost,
+          'expense_category': expense.category,
+        });
 
     // Send HTTP request
     await sendHttpRequest(apiRequest);

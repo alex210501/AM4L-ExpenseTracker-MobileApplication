@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,10 @@ import 'package:am4l_expensetracker_mobileapplication/services/fab_controller.da
 const defaultDistance = 50.0;
 const defaultOffsetY = 50.0;
 const defaultOffsetX = 10.0;
+const animationTime = 500; // milliseconds
+
+/// Convert degrees to radians
+double degreeToRadian(double degrees) => degrees * pi / 180;
 
 class ExpandableVerticalFAB extends StatefulWidget {
   final FabController fabController;
@@ -32,8 +37,25 @@ class ExpandableVerticalFAB extends StatefulWidget {
   State<ExpandableVerticalFAB> createState() => _ExpandableVerticalFABState();
 }
 
-class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
+class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
+    with TickerProviderStateMixin {
   bool _isOpen = false;
+  late final AnimationController _buttonOpacityController;
+  late final Animation<double> _buttonOpacityAnimation;
+  late final AnimationController _buttonRotationController;
+  late final Animation<double> _buttonRotationAnimation;
+
+  /// Forward all animation
+  void _forwardAnimation() {
+    _buttonOpacityController.forward();
+    _buttonRotationController.forward();
+  }
+
+  /// Reverse all animation
+  void _reverseAnimation() {
+    _buttonOpacityController.reverse();
+    _buttonRotationController.reverse();
+  }
 
   void _open(BuildContext context) {
     setState(() {
@@ -44,6 +66,8 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
         widget.onOpen!(context);
       }
     });
+
+    _forwardAnimation();
   }
 
   void _close(BuildContext context) {
@@ -55,11 +79,19 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
         widget.onClose!(context);
       }
     });
+
+    _reverseAnimation();
   }
 
   void _toggle(BuildContext context) {
     setState(() {
       _isOpen = !_isOpen;
+
+      if (_isOpen) {
+        _forwardAnimation();
+      } else {
+        _reverseAnimation();
+      }
 
       if (_isOpen && widget.onOpen != null) {
         _open(context);
@@ -70,10 +102,11 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
   }
 
   Widget _openButton() {
-    return Opacity(
-        opacity: _isOpen ? 0.0 : 1.0,
+    return Transform.rotate(
+        // opacity: _isOpen ? 0.0 : 1.0,
+        angle: _buttonRotationAnimation.value,
         child: IgnorePointer(
-            ignoring: _isOpen,
+            ignoring: false,
             child: IconButton(
               onPressed: () => _toggle(context),
               color: Colors.black,
@@ -82,27 +115,58 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
   }
 
   List<Widget> _createVerticalChildren() {
-    final verticalChildren = <Widget>[
-      Opacity(
-        opacity: _isOpen ? 1.0 : 0.0,
-        child: IconButton(
-          onPressed: () => _toggle(context),
-          icon: const Icon(Icons.close),
-        ),
-      ),
-    ];
+    final verticalChildren = <Widget>[];
 
-    if (_isOpen) {
-      widget.children.asMap().forEach((index, child) {
-        verticalChildren.add(Positioned(
-          bottom: widget.offsetY + widget.distance * (index + 1),
-          right: widget.offsetX,
-          child: child,
-        ));
-      });
-    }
+    // if (_isOpen) {
+    widget.children.asMap().forEach((index, child) {
+      final endBottom = widget.offsetY + widget.distance * (index + 1);
+
+      verticalChildren.add(AnimatedPositioned(
+        duration: const Duration(milliseconds: animationTime),
+        curve: Curves.fastOutSlowIn,
+        bottom: _isOpen ? endBottom : 20.0, // _animations[_animations.length - 1].value,
+        right: widget.offsetX,
+        // onEnd: () => setState(() => _buttonOpacity = _isOpen ? 1.0 : 0.0),
+        child: IgnorePointer(
+          ignoring: !_isOpen,
+          child: Opacity(
+            opacity: _buttonOpacityAnimation.value,
+            child: child,
+          ),
+        ),
+      ));
+    });
+    // }
 
     return verticalChildren;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Set animations
+    _buttonOpacityController = AnimationController(
+      duration: const Duration(milliseconds: animationTime),
+      vsync: this,
+    )..addListener(() => setState(() {}));
+    _buttonOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _buttonOpacityController,
+      curve: const Interval(0.0, 0.5),
+    ));
+
+    // Animation for the rotation
+    _buttonRotationController = AnimationController(
+      duration: const Duration(milliseconds: animationTime),
+      vsync: this,
+    );
+
+    _buttonRotationAnimation = Tween<double>(begin: 0.0, end: degreeToRadian(45.0)).animate(
+      CurvedAnimation(
+        parent: _buttonRotationController,
+        curve: Curves.easeIn,
+      ),
+    )..addListener(() => setState(() {}));
   }
 
   @override

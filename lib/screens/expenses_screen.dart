@@ -146,8 +146,6 @@ class _ExpenseListView extends StatelessWidget {
 /// Bottom bar that display the information about the your total cost
 /// and the total cost of the entire expenses
 class ExpensesBottomAppBar extends StatelessWidget {
-  final double heightSizedBox = 50.0;
-
   /// Constructor
   const ExpensesBottomAppBar({super.key});
 
@@ -181,26 +179,38 @@ class ExpensesBottomAppBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          SizedBox(
-            height: heightSizedBox,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Your expenses'),
-                Text('${_getTotalExpenses(expenses).toString()} €'),
-              ],
-            ),
+          _TotalExpensesColumn(
+            title: 'Your expenses',
+            expenses: _getTotalUserExpenses(context, expenses),
           ),
-          SizedBox(
-            height: heightSizedBox,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Total expenses'),
-                Text('${_getTotalUserExpenses(context, expenses).toString()} €'),
-              ],
-            ),
-          )
+          _TotalExpensesColumn(
+            title: 'Total expenses',
+            expenses: _getTotalExpenses(expenses),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Class that display the total expenses columns
+class _TotalExpensesColumn extends StatelessWidget {
+  final double heightSizedBox = 50.0;
+  final String title;
+  final double expenses;
+
+  /// Constructor
+  const _TotalExpensesColumn({super.key, required this.title, required this.expenses});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: heightSizedBox,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Your expenses', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('$expenses €'),
         ],
       ),
     );

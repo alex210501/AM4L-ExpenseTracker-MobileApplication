@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 /// A TextFormField for the floats
 class FloatNumberFormField extends StatelessWidget {
   final TextEditingController controller;
@@ -27,7 +26,7 @@ class FloatNumberFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.text,
       decoration: decoration,
       validator: _validator,
     );

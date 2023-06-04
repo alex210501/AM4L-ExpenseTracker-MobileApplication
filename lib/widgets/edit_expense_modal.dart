@@ -68,9 +68,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
       return;
     }
 
-    // Get SpacesListModel from the context
-    SpacesListModel dataService = Provider.of<SpacesListModel>(context, listen: false);
-
     // Take the values from the controllers
     _expense.cost = roundDoubleToDecimals(double.parse(_costController.text));
     _expense.description = _descriptionController.text;

@@ -1,3 +1,4 @@
+import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -115,6 +116,14 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     });
   }
 
+  /// Quit a space
+  void _onQuitSpace(BuildContext context, String spaceId) {
+    widget.expensesTrackerApi.userSpaceApi.quitSpace(spaceId).then((_) {
+      Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(spaceId);
+      Navigator.pop(context);
+    }).catchError((err) => showErrorDialog(context, err));
+  }
+
   /// Get the ID text
   RichText _getIdText() {
     return RichText(
@@ -188,6 +197,19 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
                   onDeleteCategory: _deleteCategoryFromSpace,
                 );
               }),
+              if (!isNewSpace)
+                ElevatedButton(
+                  style: ButtonStyle(
+                    side: MaterialStateProperty.all(
+                      const BorderSide(color: Colors.red),
+                    ), // Set the red border color
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.grey[50]), // Transparent background color
+                    foregroundColor: MaterialStateProperty.all(Colors.red), // Text color
+                  ),
+                  onPressed: () => _onQuitSpace(context, _space.id),
+                  child: const Text('QUIT SPACE'),
+                )
             ],
           ),
           if (_showQrCode)

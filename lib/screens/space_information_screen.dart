@@ -1,3 +1,4 @@
+import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,6 +25,7 @@ class SpaceInformationScreen extends StatefulWidget {
 
 class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   bool isNewSpace = false;
+  bool _showQrCode = false;
   late Space _space;
   late TextEditingController _descriptionController;
   late TextEditingController _nameController;
@@ -139,7 +141,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
         actions: [
           if (!isNewSpace)
             IconButton(
-                onPressed: () => showQrCodeDialog(context, _space.id),
+                onPressed: () => setState(() => _showQrCode = false),
                 icon: const Icon(Icons.qr_code_rounded, color: Colors.white)),
           TextButton(
             onPressed: () => _saveSpace(context),
@@ -149,46 +151,50 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            !isNewSpace
-                ? Row(
-                    children: [
-                      Expanded(
-                        child: _getIdText(),
-                      ),
-                      IconButton(
-                        onPressed: () => _copySpaceIdToClipboard(context),
-                        icon: const Icon(Icons.content_copy),
-                      ),
-                    ],
-                  )
-                : Container(),
-            _SpaceInfoTextForm(
-              title: 'Name',
-              controller: _nameController,
-            ),
-            _SpaceInfoTextForm(
-              title: 'Description',
-              controller: _descriptionController,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: _ListViewCollaborator(
-                space: _space,
-                onDeleteCollaborator: _deleteCollaboratorFromSpace,
-                onAddCollaborator: _addCollaboratorToSpace,
+        child: Stack(children: [
+          Column(
+            children: [
+              !isNewSpace
+                  ? Row(
+                      children: [
+                        Expanded(
+                          child: _getIdText(),
+                        ),
+                        IconButton(
+                          onPressed: () => _copySpaceIdToClipboard(context),
+                          icon: const Icon(Icons.content_copy),
+                        ),
+                      ],
+                    )
+                  : Container(),
+              _SpaceInfoTextForm(
+                title: 'Name',
+                controller: _nameController,
               ),
-            ),
-            Consumer<CategoriesListModel>(builder: (context, card, child) {
-              return _ListViewCategories(
-                space: _space,
-                onAddCategory: _addCategoryToSpace,
-                onDeleteCategory: _deleteCategoryFromSpace,
-              );
-            }),
-          ],
-        ),
+              _SpaceInfoTextForm(
+                title: 'Description',
+                controller: _descriptionController,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0),
+                child: _ListViewCollaborator(
+                  space: _space,
+                  onDeleteCollaborator: _deleteCollaboratorFromSpace,
+                  onAddCollaborator: _addCollaboratorToSpace,
+                ),
+              ),
+              Consumer<CategoriesListModel>(builder: (context, card, child) {
+                return _ListViewCategories(
+                  space: _space,
+                  onAddCategory: _addCategoryToSpace,
+                  onDeleteCategory: _deleteCategoryFromSpace,
+                );
+              }),
+            ],
+          ),
+          if (_showQrCode)
+            QrCode(qrCodeMessage: _space.id, onPressed: (_) => setState(() => _showQrCode = false))
+        ]),
       ),
     );
   }

@@ -2,13 +2,13 @@ import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.d
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
 class ExpensesScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -65,7 +65,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
           }),
           if (_showQrCode)
-            _QrCode(
+            QrCode(
               qrCodeMessage: _space.id,
               onPressed: (_) {
                 setState(() {
@@ -138,61 +138,6 @@ class _ExpenseListView extends StatelessWidget {
                 ),
               ));
         },
-      ),
-    );
-  }
-}
-
-/// Show a container that display the QR code
-class _QrCode extends StatelessWidget {
-  final String qrCodeMessage;
-  final Function(BuildContext) onPressed;
-
-  /// Constructor
-  const _QrCode({super.key, required this.qrCodeMessage, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2), // Shadow color
-              blurRadius: 5.0, // Shadow blur radius
-              spreadRadius: 20.0, // Shadow spread radius
-              offset: const Offset(0, 0), // Shadow offset
-            ),
-          ],
-        ),
-        alignment: Alignment.center,
-        child: Center(
-          child: SizedBox(
-            height: 300,
-            width: 300,
-            child: Container(
-              padding: const EdgeInsets.all(20.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    QrImageView(
-                      data: qrCodeMessage,
-                      version: QrVersions.auto,
-                      size: 200.0,
-                    ),
-                    TextButton(onPressed: () => onPressed(context), child: const Text("Ok")),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

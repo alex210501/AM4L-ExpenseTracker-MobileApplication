@@ -1,6 +1,5 @@
 import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:provider/provider.dart';
 
@@ -180,10 +179,15 @@ class _ExpenseFormState extends State<ExpenseForm> {
                     controller: _costController,
                     decoration: const InputDecoration(hintText: "Cost"),
                   ),
-                  _CategoryDropdownButton(
-                    dropdownValue: _category,
-                    onChanged: _onCategoryChanged,
-                  ),
+                  Row(
+                    children: [
+                      const Text('Category: ', style: TextStyle(fontSize: 15.0)),
+                      _CategoryDropdownButton(
+                        dropdownValue: _category,
+                        onChanged: _onCategoryChanged,
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),

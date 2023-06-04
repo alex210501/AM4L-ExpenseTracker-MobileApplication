@@ -54,33 +54,33 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       bottomNavigationBar: Consumer<ExpensesListModel>(builder: (context, card, child) {
         return ExpensesBottomAppBar();
       }),
-      floatingActionButton: IconButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () => showEditExpenseModal(context, _space, widget.expensesTrackerApi),
-        icon: const Icon(Icons.add),
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      body: Stack(
-        children: [
-          Consumer<ExpensesListModel>(builder: (context, card, child) {
-            return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
-          }),
-          if (_showQrCode)
-            QrCode(
-              qrCodeMessage: _space.id,
-              onPressed: (_) {
-                setState(() {
-                  _showQrCode = false;
-                });
-              },
-            ),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Stack(
+          children: [
+            Consumer<ExpensesListModel>(builder: (context, card, child) {
+              return _ExpenseListView(spaceId: _space.id, onDelete: _onDeleteExpense);
+            }),
+            if (_showQrCode)
+              QrCode(
+                qrCodeMessage: _space.id,
+                onPressed: (_) => setState(() => _showQrCode = false),
+              ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _ExpenseListView extends StatelessWidget {
-  final spaceId;
+  final String spaceId;
   final void Function(BuildContext, Expense) onDelete;
 
   const _ExpenseListView({required this.spaceId, required this.onDelete});

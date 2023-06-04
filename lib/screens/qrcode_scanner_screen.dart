@@ -49,6 +49,12 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
         onQRViewCreated: _onQRViewCreated(context),
         formatsAllowed: const [BarcodeFormat.qrcode],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        child: const Icon(Icons.close, color: Colors.black),
+        onPressed: () => Navigator.pop(context),
+      ),
     );
   }
 }

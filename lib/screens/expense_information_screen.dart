@@ -41,10 +41,10 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
   void _onEdit(BuildContext context) async {
     // Get the new expense
     final updatedExpense = await showEditExpenseModal(
-        context,
-        _space,
-        widget.expensesTrackerApi,
-        expenseId: _expenseId,
+      context,
+      _space,
+      widget.expensesTrackerApi,
+      expenseId: _expenseId,
     );
 
     // If the expense is not null, we can update the current one
@@ -75,18 +75,41 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
             )
           ],
         ),
-        body: Center(
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Description: ${_expense.description}'),
-              Text('Cost: ${_expense.cost}€'),
-              Text('Author: ${_expense.paidBy}'),
-              Text('Date: ${formatDate(_expense.date)}'),
-              Text('Category: ${category?.title ?? 'None'}'),
+              _InformationLine(title: 'Description', info: _expense.description),
+              _InformationLine(title: 'Cost', info: '${_expense.cost} €'),
+              _InformationLine(title: 'Author', info: _expense.paidBy),
+              _InformationLine(title: 'Date', info: formatDate(_expense.date)),
+              _InformationLine(title: 'Category', info: category?.title ?? 'None'),
             ],
           ),
         ),
       );
     });
+  }
+}
+
+class _InformationLine extends StatelessWidget {
+  final String title;
+  final String info;
+
+  /// Constructor
+  const _InformationLine({super.key, required this.title, required this.info});
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        style: const TextStyle(color: Colors.black, fontSize: 15.0),
+        children: [
+          TextSpan(text: title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          TextSpan(text: ': $info'),
+        ],
+      ),
+    );
   }
 }

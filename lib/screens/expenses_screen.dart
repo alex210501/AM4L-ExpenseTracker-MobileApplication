@@ -78,6 +78,20 @@ class _ExpenseListView extends StatelessWidget {
     Navigator.pushNamed(context, '/space/expense/info', arguments: arguments);
   }
 
+  RichText _getPaidByTitle(BuildContext context, Expense expense) {
+    final username = Provider.of<CredentialsModel>(context, listen: false).username;
+
+    return RichText(
+      text: TextSpan(style: const TextStyle(color: Colors.black), children: [
+        const TextSpan(text: 'Paid by '),
+        TextSpan(
+          text: expense.paidBy == username ? 'You' : expense.paidBy,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final expenses = Provider.of<ExpensesListModel>(context).expenses;
@@ -103,7 +117,7 @@ class _ExpenseListView extends StatelessWidget {
                 child: ListTile(
                   onTap: () => _onExpense(context, expenses[index]),
                   title: Text(expenses[index].description),
-                  subtitle: Text('Paid by ${expenses[index].paidBy}'),
+                  subtitle: _getPaidByTitle(context, expenses[index]),
                   trailing: Text('${expenses[index].cost}€'),
                 ),
               ));

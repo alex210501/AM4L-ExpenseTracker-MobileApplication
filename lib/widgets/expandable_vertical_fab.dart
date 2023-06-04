@@ -76,6 +76,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
             ignoring: _isOpen,
             child: IconButton(
               onPressed: () => _toggle(context),
+              color: Colors.black,
               icon: const Icon(Icons.add),
             )));
   }
@@ -119,14 +120,17 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB> {
       ),
       child: SizedBox(
         height: (widget.children.length + 1) * widget.distance,
-        width: 100,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          clipBehavior: Clip.none,
-          children: [
-            _openButton(),
-            ..._createVerticalChildren(),
-          ],
+        width: 50,
+        child: Container(
+          decoration: BoxDecoration(color: Colors.grey[50]),
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            clipBehavior: Clip.none,
+            children: [
+              _openButton(),
+              ..._createVerticalChildren(),
+            ],
+          ),
         ),
       ),
     );

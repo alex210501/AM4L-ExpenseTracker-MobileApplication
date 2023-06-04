@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.d
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/fab_controller.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
 class SpacesScreen extends StatefulWidget {
@@ -25,18 +25,22 @@ class SpacesScreen extends StatefulWidget {
 class _SpacesScreenState extends State<SpacesScreen> {
   final FabController _fabController = FabController();
 
-  void _joinSpace(BuildContext context, String spaceId) {
+  void _joinSpace(BuildContext context, String spaceId, {bool popContext = false}) {
     widget.expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
       // Get information from the space joined
       widget.expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
         Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
+
+        // Close the dialog if variable popContext set
+        if (popContext) {
+          Navigator.pop(context);
+        }
       });
-    });
+    }).catchError((err) => showErrorDialog(context, err));
   }
 
   _onJoinSpaceDialog(BuildContext context, String spaceId) {
-    _joinSpace(context, spaceId);
-    Navigator.pop(context);
+    _joinSpace(context, spaceId, popContext: true);
 
     // Close the FAB
     if (_fabController.close != null) {
@@ -70,7 +74,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     widget.expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
       // Get and update the SpacesListModel
       Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(space.id);
-    });
+    }).catchError((err) => showErrorDialog(context, err));
   }
 
   _goToSpaceInfo(BuildContext context) {

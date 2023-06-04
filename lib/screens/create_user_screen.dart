@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/user.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 class CreateUserScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -18,7 +19,9 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
     widget.expensesTrackerApi.userApi
         .createUser(user, password)
         .then((_) => Navigator.pushNamed(context, '/login'))
-        .catchError((error) => print(error));
+        .catchError((err) {
+      showErrorDialog(context, err);
+    });
   }
 
   /// On Sign In action

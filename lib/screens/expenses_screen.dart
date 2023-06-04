@@ -8,6 +8,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
 class ExpensesScreen extends StatefulWidget {
@@ -26,7 +27,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   void _onDeleteExpense(BuildContext context, Expense expense) {
     widget.expensesTrackerApi.expenseApi
         .deleteExpense(_space.id, expense.id)
-        .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id));
+        .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id))
+        .catchError((err) => showErrorDialog(context, err));
   }
 
   @override
@@ -44,9 +46,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         title: Text(_space.name),
         actions: [
           IconButton(
-            onPressed: () => setState(() {
-              _showQrCode = true;
-            }), // showQrCodeDialog(context, _space.id),
+            onPressed: () => setState(() => _showQrCode = true),
             icon: const Icon(Icons.qr_code_rounded, color: Colors.white),
           ),
         ],

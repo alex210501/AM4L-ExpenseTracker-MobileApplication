@@ -1,4 +1,3 @@
-import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -7,11 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
-import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode_dialog.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;

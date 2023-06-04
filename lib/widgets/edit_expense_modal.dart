@@ -11,6 +11,7 @@ import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.d
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
+import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/floatnumber_formfield.dart';
 
 Future<Expense?> showEditExpenseModal(
@@ -89,13 +90,13 @@ class _ExpenseFormState extends State<ExpenseForm> {
         _setLoading(false);
         Provider.of<ExpensesListModel>(context, listen: false).addExpense(newExpense);
         Navigator.pop(context);
-      });
+      }).catchError((err) => showErrorDialog(context, err));
     } else {
       widget.expensesTrackerApi.expenseApi.patchExpense(widget.spaceId, _expense).then((_) {
         _setLoading(false);
         Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
         Navigator.pop(context, _expense);
-      }).catchError((err) => print(err));
+      }).catchError((err) => showErrorDialog(context, err));
     }
   }
 
@@ -136,10 +137,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   @override
   Widget build(BuildContext context) {
-    final categories = [
-      null,
-      ...Provider.of<CategoriesListModel>(context, listen: false).categories,
-    ];
+    // If it is the first build, load the expense
     if (_firstBuild) {
       _firstBuild = false;
       _loadExpense(context);

@@ -36,7 +36,8 @@ class _QrCodeScannerScreenState extends State<QrCodeScannerScreen> {
       this.controller = controller;
 
       controller.scannedDataStream.listen((scanData) {
-        controller.stopCamera().then((_) => Navigator.pop(context, scanData.code));
+        Navigator.pop(context, scanData.code);
+        controller.stopCamera();
       });
     };
   }

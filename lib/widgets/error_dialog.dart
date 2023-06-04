@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
-
-void showErrorDialog(BuildContext context, Exception errorMessage) {
-  showDialog(
+Future<Null> showErrorDialog(BuildContext context, Exception errorMessage) {
+  return showDialog(
     context: context,
-    builder: (BuildContext context) => ErrorDialog(errorMessage: errorMessage.toString(),),
+    builder: (BuildContext context) => ErrorDialog(
+      errorMessage: errorMessage.toString(),
+    ),
   );
 }
 
@@ -12,7 +13,7 @@ class ErrorDialog extends StatelessWidget {
   final String errorMessage;
 
   /// Constructor
-  const ErrorDialog({ super.key, required this.errorMessage });
+  const ErrorDialog({super.key, required this.errorMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +23,20 @@ class ErrorDialog extends StatelessWidget {
         children: [
           const Icon(Icons.error),
           Expanded(
-              child: Text(errorMessage, softWrap: true, maxLines: 5,),
+            child: Text(
+              errorMessage,
+              softWrap: true,
+              maxLines: 5,
+            ),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Ok',),
+          child: const Text(
+            'Ok',
+          ),
         ),
       ],
     );

@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-
 import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
-
 
 class LoginScreen extends StatefulWidget {
   final ExpensesTrackerApi expensesTrackerApi;
@@ -78,45 +76,49 @@ class _LoginScreenState extends State<LoginScreen> {
         title: const Text("Login"),
       ),
       body: Center(
-        child: Stack(children: [
-          Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(hintText: "Username"),
-                  controller: _usernameController,
-                  validator: (text) {
-                    return (text == null || text.isEmpty) ? "Username must be filled!" : null;
-                  },
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    hintText: "Password",
-                  ),
-                  controller: _passwordController,
-                  obscureText: true,
-                  validator: (text) {
-                    return (text == null || text.isEmpty) ? "Password must be filled!" : null;
-                  },
-                ),
-                Row(
+        child: Padding(
+            padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
+            child: Stack(children: [
+              Form(
+                key: _formKey,
+                child: Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, '/create-user'),
-                      child: const Text("Sign up"),
+                    TextFormField(
+                      decoration: const InputDecoration(hintText: "Username"),
+                      controller: _usernameController,
+                      validator: (text) {
+                        return (text == null || text.isEmpty) ? "Username must be filled!" : null;
+                      },
                     ),
-                    ElevatedButton(
-                      onPressed: () => _login(context),
-                      child: const Text("Connect"),
+                    TextFormField(
+                      decoration: const InputDecoration(hintText: "Password"),
+                      controller: _passwordController,
+                      obscureText: true,
+                      validator: (text) {
+                        return (text == null || text.isEmpty) ? "Password must be filled!" : null;
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => Navigator.pushNamed(context, '/create-user'),
+                            child: const Text("Sign up"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => _login(context),
+                            child: const Text("Connect"),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                )
-              ],
-            ),
-          ),
-          if (_isLoading) const ApiLoadingIndicator(),
-        ]),
+                ),
+              ),
+              if (_isLoading) const ApiLoadingIndicator(),
+            ])),
       ),
     );
   }

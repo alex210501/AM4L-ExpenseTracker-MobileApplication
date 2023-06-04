@@ -115,6 +115,20 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     });
   }
 
+  /// Get the ID text
+  RichText _getIdText() {
+    return RichText(
+      text: TextSpan(style: const TextStyle(color: Colors.black), children: [
+        const TextSpan(
+          text: 'ID',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        TextSpan(text: ': ${_space.id}')
+      ]),
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     _loadSpaceFromRouteArgument(context);
@@ -133,25 +147,19 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
           ),
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
             !isNewSpace
                 ? Row(
                     children: [
-                      Flexible(
-                        flex: 4,
-                        child: Text(
-                          'ID: ${_space.id}',
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                      Expanded(
+                        child: _getIdText(),
                       ),
-                      Flexible(
-                        flex: 1,
-                        child: IconButton(
-                          onPressed: () => _copySpaceIdToClipboard(context),
-                          icon: const Icon(Icons.content_copy),
-                        ),
+                      IconButton(
+                        onPressed: () => _copySpaceIdToClipboard(context),
+                        icon: const Icon(Icons.content_copy),
                       ),
                     ],
                   )
@@ -164,10 +172,13 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
               title: 'Description',
               controller: _descriptionController,
             ),
-            _ListViewCollaborator(
-              space: _space,
-              onDeleteCollaborator: _deleteCollaboratorFromSpace,
-              onAddCollaborator: _addCollaboratorToSpace,
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: _ListViewCollaborator(
+                space: _space,
+                onDeleteCollaborator: _deleteCollaboratorFromSpace,
+                onAddCollaborator: _addCollaboratorToSpace,
+              ),
             ),
             Consumer<CategoriesListModel>(builder: (context, card, child) {
               return _ListViewCategories(
@@ -175,7 +186,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
                 onAddCategory: _addCategoryToSpace,
                 onDeleteCategory: _deleteCategoryFromSpace,
               );
-            })
+            }),
           ],
         ),
       ),
@@ -195,7 +206,10 @@ class _SpaceInfoTextForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(title),
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         const Spacer(),
         Expanded(
           flex: 7,
@@ -229,8 +243,13 @@ class _ListViewCollaborator extends StatelessWidget {
     return Center(
         child: Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Members'),
+        const Text(
+          'Members',
+          textAlign: TextAlign.justify,
+          style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+        ),
         Flexible(
           child: ListView.builder(
               shrinkWrap: true,
@@ -278,13 +297,12 @@ class _AddTile extends StatelessWidget {
   }
 }
 
-@immutable
 class _ListViewCategories extends StatelessWidget {
   final Space space;
   final void Function(BuildContext, String, String) onAddCategory;
   final void Function(BuildContext, String, String) onDeleteCategory;
 
-  _ListViewCategories({
+  const _ListViewCategories({
     super.key,
     required this.space,
     required this.onAddCategory,
@@ -298,8 +316,13 @@ class _ListViewCategories extends StatelessWidget {
     return Center(
         child: Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Categories'),
+        const Text(
+          'Categories',
+          textAlign: TextAlign.justify,
+          style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+        ),
         Flexible(
           child: ListView.builder(
               shrinkWrap: true,

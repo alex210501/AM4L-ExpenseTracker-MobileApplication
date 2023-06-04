@@ -116,11 +116,13 @@ class _ExpenseListView extends StatelessWidget {
 /// Bottom bar that display the information about the your total cost
 /// and the total cost of the entire expenses
 class ExpensesBottomAppBar extends StatelessWidget {
+  final double heightSizedBox = 50.0;
+
   /// Constructor
   const ExpensesBottomAppBar({super.key});
 
   /// Compute the total expenses
-  double _getTotalExpenses(List<Expense> expenses, { String? username }) {
+  double _getTotalExpenses(List<Expense> expenses, {String? username}) {
     double sum = 0.0;
 
     for (var element in expenses) {
@@ -145,21 +147,26 @@ class ExpensesBottomAppBar extends StatelessWidget {
 
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
+      padding: const EdgeInsets.all(10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            height: 50,
+            height: heightSizedBox,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text('Your expenses'),
                 Text('${_getTotalExpenses(expenses).toString()} €'),
               ],
             ),
           ),
           SizedBox(
-            height: 50,
+            height: heightSizedBox,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text('Total expenses'),
                 Text('${_getTotalUserExpenses(context, expenses).toString()} €'),
               ],
             ),

@@ -70,14 +70,6 @@ class _SpacesScreenState extends State<SpacesScreen> {
         });
   }
 
-  _goToQrScanner(BuildContext context) {
-    Navigator.pushNamed(context, '/space/qrcode').then((spaceId) {
-      if (spaceId != null) {
-        _joinSpace(context, spaceId as String);
-      }
-    });
-  }
-
   _deleteSpace(BuildContext context, Space space) {
     widget.expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
       // Get and update the SpacesListModel

@@ -25,3 +25,4 @@ doc/api/
 
 assets/configs
 .DS_Store
+.flutter-plugins*

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
 import 'package:flutter/material.dart';
@@ -71,10 +70,19 @@ class _SpacesScreenState extends State<SpacesScreen> {
         });
   }
 
+  _goToQrScanner(BuildContext context) {
+    Navigator.pushNamed(context, '/space/qrcode').then((spaceId) {
+      if (spaceId != null) {
+        _joinSpace(context, spaceId as String);
+      }
+    });
+  }
+
   _deleteSpace(BuildContext context, Space space) {
     widget.expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
       // Get and update the SpacesListModel
-      Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(space.id);
+      Provider.of<SpacesListModel>(context, listen: false)
+          .removeSpaceBySpaceID(space.id);
     });
   }
 
@@ -113,18 +121,25 @@ class _SpacesScreenState extends State<SpacesScreen> {
         onOpen: (context) => setState(() {}),
         onClose: (context) => setState(() {}),
         children: [
-          TextButton(onPressed: () => _goToSpaceInfo(context), child: const Text('Create')),
-          TextButton(onPressed: () => _openDialog(context), child: const Text('Join')),
-          TextButton(onPressed: () => _goToQrScanner(context), child: const Text('Scan QR')),
+          TextButton(
+              onPressed: () => _goToSpaceInfo(context),
+              child: const Text('Create')),
+          TextButton(
+              onPressed: () => _openDialog(context), child: const Text('Join')),
+          TextButton(
+              onPressed: () => _goToQrScanner(context),
+              child: const Text('Scan QR')),
         ],
       ),
       body: Consumer<SpacesListModel>(builder: (context, cart, child) {
         return IgnorePointer(
-            ignoring: _fabController.getState != null ? _fabController.getState!() : false,
-            child: _SpaceListView(
-              expensesTrackerApi: widget.expensesTrackerApi,
-              onDelete: (arg) => _deleteSpace(context, arg),
-            ),
+          ignoring: _fabController.getState != null
+              ? _fabController.getState!()
+              : false,
+          child: _SpaceListView(
+            expensesTrackerApi: widget.expensesTrackerApi,
+            onDelete: (arg) => _deleteSpace(context, arg),
+          ),
         );
       }),
     );
@@ -163,7 +178,8 @@ class _SpaceListViewState extends State<_SpaceListView> {
   void _goToSpaceInfo(BuildContext context, Space space) {
     // Load the categories from the API
     _loadCategories(context, space).then((categories) {
-      Provider.of<CategoriesListModel>(context, listen: false).setCategories(categories);
+      Provider.of<CategoriesListModel>(context, listen: false)
+          .setCategories(categories);
 
       // Go to SpaceInformationScreen
       Navigator.pushNamed(context, '/space/info', arguments: space);
@@ -177,11 +193,13 @@ class _SpaceListViewState extends State<_SpaceListView> {
       _setLoading(false);
 
       // Set the expenses
-      Provider.of<ExpensesListModel>(context, listen: false).setExpenses(expenses);
+      Provider.of<ExpensesListModel>(context, listen: false)
+          .setExpenses(expenses);
 
       // Load the categories from the API
       _loadCategories(context, space).then((categories) {
-        Provider.of<CategoriesListModel>(context, listen: false).setCategories(categories);
+        Provider.of<CategoriesListModel>(context, listen: false)
+            .setCategories(categories);
 
         // Go to ExpensesScreen
         Navigator.pushNamed(context, '/space/expenses', arguments: space);
@@ -192,10 +210,12 @@ class _SpaceListViewState extends State<_SpaceListView> {
   /// Function to refresh the spaces
   Future<void> _onRefresh(BuildContext context) async {
     // Get SpacesListModel from context
-    final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
+    final spacesListModel =
+        Provider.of<SpacesListModel>(context, listen: false);
 
     // Add spaces to SpacesListModel
-    spacesListModel.setSpaces(await widget.expensesTrackerApi.spaceApi.getSpaces());
+    spacesListModel
+        .setSpaces(await widget.expensesTrackerApi.spaceApi.getSpaces());
   }
 
   @override
@@ -231,7 +251,8 @@ class _SpaceListViewState extends State<_SpaceListView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            onPressed: () => _goToSpaceInfo(context, spaces[index]),
+                            onPressed: () =>
+                                _goToSpaceInfo(context, spaces[index]),
                             icon: const Icon(Icons.edit),
                           ),
                         ],

@@ -47,6 +47,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+<<<<<<< HEAD
 	<key>NSAppTransportSecurity</key>
 	<dict>
    		<key>NSAllowsArbitraryLoads</key><true/>
@@ -55,5 +56,11 @@
     <string>your usage description here</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>your usage description here</string>
+=======
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to scan QR codes</string>
+>>>>>>> 2530759 (Fix bug in IOS fro qrcode_scanner)
 </dict>
 </plist>

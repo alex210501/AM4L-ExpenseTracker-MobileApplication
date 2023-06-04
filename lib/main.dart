@@ -12,7 +12,11 @@ import 'package:am4l_expensetracker_mobileapplication/screens/expense_informatio
 import 'package:am4l_expensetracker_mobileapplication/screens/login_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/space_information_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
+<<<<<<< HEAD
 import 'package:am4l_expensetracker_mobileapplication/screens/qrcode_scanner_screen.dart';
+=======
+import 'package:am4l_expensetracker_mobileapplication/screens/qrcode_scanner_screen';
+>>>>>>> 2530759 (Fix bug in IOS fro qrcode_scanner)
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 
 void main() {
@@ -43,11 +47,14 @@ class MyApp extends StatelessWidget {
             ),
             initialRoute: '/login',
             routes: {
-              '/login': (context) => LoginScreen(expensesTrackerApi: expensesTrackerApi),
-              '/create-user': (context) => CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
-              '/space': (context) => SpacesScreen(expensesTrackerApi: expensesTrackerApi),
-              '/space/info': (context) =>
-                  SpaceInformationScreen(expensesTrackerApi: expensesTrackerApi),
+              '/login': (context) =>
+                  LoginScreen(expensesTrackerApi: expensesTrackerApi),
+              '/create-user': (context) =>
+                  CreateUserScreen(expensesTrackerApi: expensesTrackerApi),
+              '/space': (context) =>
+                  SpacesScreen(expensesTrackerApi: expensesTrackerApi),
+              '/space/info': (context) => SpaceInformationScreen(
+                  expensesTrackerApi: expensesTrackerApi),
               '/space/expenses': (context) =>
                   ExpensesScreen(expensesTrackerApi: expensesTrackerApi),
               '/space/expense/info': (context) => ExpenseInformationScreen(

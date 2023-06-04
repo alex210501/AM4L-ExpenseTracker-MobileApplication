@@ -6,7 +6,8 @@ import 'package:qr_flutter/qr_flutter.dart';
 void showQrCodeDialog(BuildContext context, String qrCodeMessage) {
   showDialog(
     context: context,
-    builder: (BuildContext context) => QrCodeDialog(qrCodeMessage: qrCodeMessage),
+    builder: (BuildContext context) =>
+        QrCodeDialog(qrCodeMessage: qrCodeMessage),
   );
 }
 

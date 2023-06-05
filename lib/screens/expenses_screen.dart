@@ -110,17 +110,17 @@ class _ExpenseListView extends StatelessWidget {
     Navigator.pushNamed(context, '/space/expense/info', arguments: arguments);
   }
 
-  RichText _getPaidByTitle(BuildContext context, Expense expense) {
+  Widget _getPaidByTitle(BuildContext context, Expense expense) {
     final username = Provider.of<CredentialsModel>(context, listen: false).username;
 
-    return RichText(
-      text: TextSpan(style: const TextStyle(color: Colors.black), children: [
-        const TextSpan(text: 'Paid by '),
-        TextSpan(
-          text: expense.paidBy == username ? 'You' : expense.paidBy,
+    return Row(
+      children: [
+        const Text('Paid by '),
+        Text(
+          expense.paidBy == username ? 'You' : expense.paidBy,
           style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ]),
+        )
+      ],
     );
   }
 

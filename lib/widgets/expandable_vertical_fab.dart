@@ -107,10 +107,9 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
         angle: _buttonRotationAnimation.value,
         child: IgnorePointer(
             ignoring: false,
-            child: IconButton(
+            child: FloatingActionButton(
               onPressed: () => _toggle(context),
-              color: Colors.black,
-              icon: const Icon(Icons.add),
+              child: const Icon(Icons.add),
             )));
   }
 
@@ -186,7 +185,6 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
         height: (widget.children.length + 1) * widget.distance,
         width: 50,
         child: Container(
-          decoration: BoxDecoration(color: Colors.grey[50]),
           child: Stack(
             alignment: Alignment.bottomCenter,
             clipBehavior: Clip.none,

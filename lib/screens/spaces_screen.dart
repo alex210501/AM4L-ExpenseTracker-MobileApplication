@@ -104,11 +104,16 @@ class _SpacesScreenState extends State<SpacesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Spaces'),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+              icon: const Icon(Icons.settings))
+        ],
       ),
       floatingActionButton: ExpandableVerticalFAB(
         fabController: _fabController,
         distance: 50.0,
-        offsetY: 0.0,
+        offsetY: 10.0,
         onOpen: (context) => setState(() {}),
         onClose: (context) => setState(() {}),
         children: [

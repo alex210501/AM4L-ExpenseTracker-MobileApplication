@@ -1,4 +1,4 @@
-import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/api/api_request.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/category_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expense_api.dart';

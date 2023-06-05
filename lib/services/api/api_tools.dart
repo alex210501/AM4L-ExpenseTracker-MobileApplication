@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'package:am4l_expensetracker_mobileapplication/models/api_response.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
-
+import 'package:am4l_expensetracker_mobileapplication/models/api/api_response.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/api/api_request.dart';
 
 /// Send http request and throw error if status code is not 200
 Future<dynamic> sendHttpRequest(ApiRequest apiRequest) async {
@@ -28,7 +27,7 @@ Future<http.Response> _makeRequest(ApiRequest apiRequest) {
   final uri = Uri.parse(apiRequest.uri);
   final body = jsonEncode(apiRequest.body);
 
-  switch(apiRequest.method) {
+  switch (apiRequest.method) {
     case HttpMethod.get:
       return http.get(uri, headers: apiRequest.headers);
     case HttpMethod.post:

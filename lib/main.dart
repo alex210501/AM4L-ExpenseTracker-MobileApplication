@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:am4l_expensetracker_mobileapplication/models/categories_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/credentials_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/expenses_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/spaces_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/theme_selection.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/categories_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/credentials_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/theme_selection.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/create_user_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/expenses_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/expense_information_screen.dart';

@@ -1,10 +1,8 @@
-import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/api/api_request.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expense_api.dart';
 
 const categoryPath = 'space/:spaceId/category';
-
 
 /// Class that manage the request for Category
 class CategoryApi {
@@ -26,9 +24,7 @@ class CategoryApi {
     List<dynamic> response = await sendHttpRequest(apiRequest);
 
     // Convert JSON into Categories
-    return response
-        .map((value) => Category.fromJson(value as Map<String, dynamic>))
-        .toList();
+    return response.map((value) => Category.fromJson(value as Map<String, dynamic>)).toList();
   }
 
   /// Create a category in the API
@@ -37,7 +33,7 @@ class CategoryApi {
       uri: '$uri/${categoryPath.replaceAll(':spaceId', spaceId)}',
       method: HttpMethod.post,
       headers: appJsonHeader,
-      body: { 'category_title': categoryTitle },
+      body: {'category_title': categoryTitle},
     );
 
     // Send HTTP request

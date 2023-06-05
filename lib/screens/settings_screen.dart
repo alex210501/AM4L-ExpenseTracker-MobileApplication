@@ -1,10 +1,13 @@
-import 'package:am4l_expensetracker_mobileapplication/models/theme_selection.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/theme_selection.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
 /// Setting screen
 class SettingsScreen extends StatelessWidget {
+  /// Constructor
+  const SettingsScreen({super.key});
+
   /// On changed switch for dark theme
   void _onChangedDarkTheme(BuildContext context) {
     // Get selection theme

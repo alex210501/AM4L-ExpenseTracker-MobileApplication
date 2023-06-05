@@ -1,4 +1,4 @@
-import 'package:am4l_expensetracker_mobileapplication/models/api_request.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/api/api_request.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/api_tools.dart';
 
@@ -24,9 +24,7 @@ class SpaceApi {
     List<dynamic> response = await sendHttpRequest(apiRequest);
 
     // Convert JSON into Spaces
-    return response
-        .map((value) => Space.fromJson(value as Map<String, dynamic>))
-        .toList();
+    return response.map((value) => Space.fromJson(value as Map<String, dynamic>)).toList();
   }
 
   /// Get space given it ID

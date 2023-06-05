@@ -11,20 +11,25 @@ import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
+/// Screen to show the expense of a [Space]
 class ExpensesScreen extends StatefulWidget {
   /// Constructor
   const ExpensesScreen({super.key});
 
+  /// Override createState
   @override
   State<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
+/// State for ExpensesScreen
 class _ExpensesScreenState extends State<ExpensesScreen> {
   late ExpensesTrackerApi _expensesTrackerApi;
-  bool _showQrCode = false;
+  bool _showQrCode = false; // Is the QR code displayed
   Space _space = Space.defaultValue();
 
+  /// Callback used when we want to refresh the expenses
   Future<void> _onRefresh(BuildContext context) async {
+    /// Load expenses from the context
     final expensesListModel = getExpensesListModel(context);
 
     try {
@@ -38,6 +43,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     }
   }
 
+  /// Callback to delete an [expense] from the [Space]
   void _onDeleteExpense(BuildContext context, Expense expense) {
     /// Make request to delete expense
     _expensesTrackerApi.expenseApi
@@ -46,6 +52,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         .catchError((err) => showErrorDialog(context, err));
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     final spaceArg = ModalRoute.of(context)!.settings.arguments;
@@ -99,21 +106,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   }
 }
 
+/// Widget to show the expenses using a [ListView]
 class _ExpenseListView extends StatelessWidget {
   final String spaceId;
   final void Function(BuildContext, Expense) onDelete;
 
+  /// Constructor
   const _ExpenseListView({required this.spaceId, required this.onDelete});
 
+  /// Callback used when you click on an [expense]
   void _onExpense(BuildContext context, Expense expense) {
     Map<String, String> arguments = {
       'spaceId': spaceId,
       'expenseId': expense.id,
     };
 
+    // Go display the information of the expense
     Navigator.pushNamed(context, '/space/expense/info', arguments: arguments);
   }
 
+  /// Get the title to display who paid this [expense]
   Widget _getPaidByTitle(BuildContext context, Expense expense) {
     final username = getCredentialsModel(context).username;
 
@@ -128,6 +140,7 @@ class _ExpenseListView extends StatelessWidget {
     );
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     final expenses = getExpensesListModel(context).expenses;
@@ -174,6 +187,7 @@ class ExpensesBottomAppBar extends StatelessWidget {
   double _getTotalExpenses(List<Expense> expenses, {String? username}) {
     double sum = 0.0;
 
+    // Compute sum for each expense
     for (var element in expenses) {
       if ((username == null) || (username == element.paidBy)) {
         sum += element.cost;
@@ -190,6 +204,7 @@ class ExpensesBottomAppBar extends StatelessWidget {
     return _getTotalExpenses(expenses, username: username);
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     final expenses = getExpensesListModel(context).expenses;
@@ -221,8 +236,9 @@ class _TotalExpensesColumn extends StatelessWidget {
   final double expenses;
 
   /// Constructor
-  const _TotalExpensesColumn({super.key, required this.title, required this.expenses});
+  const _TotalExpensesColumn({required this.title, required this.expenses});
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return SizedBox(

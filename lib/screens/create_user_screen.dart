@@ -4,14 +4,17 @@ import 'package:am4l_expensetracker_mobileapplication/models/user.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
+/// User that create a new user
 class CreateUserScreen extends StatefulWidget {
   /// Constructor
   const CreateUserScreen({super.key});
 
+  /// Override createState
   @override
   State<CreateUserScreen> createState() => _CreateUserScreenState();
 }
 
+/// State for CreateUserScreen
 class _CreateUserScreenState extends State<CreateUserScreen> {
   /// Create User
   _createUser(BuildContext context, User user, String password) {
@@ -25,11 +28,12 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
         .catchError((err) => showErrorDialog(context, err));
   }
 
-  /// On Sign In action
+  /// On SignIn action
   _onSignIn(BuildContext context) {
     Navigator.pushNamed(context, '/login');
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,19 +48,23 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   }
 }
 
+/// Formt to SignUp a new user
 class _SignUpForm extends StatefulWidget {
   final void Function(BuildContext, User, String) onCreate;
   final void Function(BuildContext) onSignIn;
 
+  /// Constructor with [onCreate] and [onSignIn]
   const _SignUpForm({
     required this.onCreate,
     required this.onSignIn,
   });
 
+  /// Override createState
   @override
   State<_SignUpForm> createState() => _SignUpFormState();
 }
 
+/// State for _SignUpForm
 class _SignUpFormState extends State<_SignUpForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
@@ -66,7 +74,9 @@ class _SignUpFormState extends State<_SignUpForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  /// Callback when a user is created
   void _onCreate(BuildContext context) {
+    /// Create a user if the form is valid
     if (_formKey.currentState!.validate()) {
       User user = User(
         username: _usernameController.text,
@@ -81,6 +91,7 @@ class _SignUpFormState extends State<_SignUpForm> {
     }
   }
 
+  /// Dispose all the controllers
   @override
   void dispose() {
     // Clear ressources used by TextEditingController
@@ -94,6 +105,7 @@ class _SignUpFormState extends State<_SignUpForm> {
     super.dispose();
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

@@ -9,24 +9,28 @@ import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 
+/// Class to show the information of an Expense
 class ExpenseInformationScreen extends StatefulWidget {
   /// Constructor
   const ExpenseInformationScreen({super.key});
 
+  /// Override createState
   @override
   State<ExpenseInformationScreen> createState() => _ExpenseInformationScreenState();
 }
 
+/// State for ExpenseInformationScreen
 class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
   String _spaceId = '';
   String _expenseId = '';
   Space _space = Space.defaultValue();
   Expense _expense = Expense.defaultValues();
 
+  /// Load arguments pass to the routes
   void _loadFromArguments(BuildContext context) {
     final arguments = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
 
-    // Set expense and space ID
+    // Set expense and space ID from the arguments
     _spaceId = arguments['spaceId'] ?? '';
     _expenseId = arguments['expenseId'] ?? '';
 
@@ -35,6 +39,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
     _expense = getExpensesListModel(context).getExpenseByID(_expenseId)!;
   }
 
+  /// Callback used when edit the [Expense]
   void _onEdit(BuildContext context) async {
     // Get the new expense from the modal output
     final updatedExpense = await showEditExpenseModal(
@@ -51,6 +56,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
     }
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     // Load arguments passed to the route
@@ -88,13 +94,15 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
   }
 }
 
+/// Template for an information line for an [Expense]
 class _InformationLine extends StatelessWidget {
   final String title;
   final String info;
 
   /// Constructor
-  const _InformationLine({super.key, required this.title, required this.info});
+  const _InformationLine({required this.title, required this.info});
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return RichText(

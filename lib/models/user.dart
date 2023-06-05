@@ -1,14 +1,16 @@
+/// Model for User
 class User {
   final String username;
   final String firstname;
   final String lastname;
   final String email;
 
+  /// Constructor
   User(
       {required this.username,
       required this.firstname,
       required this.lastname,
-      required this.email });
+      required this.email});
 
   /// Create User from JSON
   User.fromJson(Map<dynamic, dynamic> jsonData)

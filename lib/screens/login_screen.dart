@@ -4,28 +4,29 @@ import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart'
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
+/// Screen used to log into the application
 class LoginScreen extends StatefulWidget {
   /// Constructor
   const LoginScreen({super.key});
 
+  /// Override createState
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
+/// State or LoginScreen
 class _LoginScreenState extends State<LoginScreen> {
-  bool _isLoading = false;
+  bool _isLoading = false; // Display a loading dialog while fetching data
   final _formKey = GlobalKey<FormState>();
 
   /// Forms controller
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _setLoading(bool loadingState) {
-    setState(() {
-      _isLoading = loadingState;
-    });
-  }
+  /// Set the [_isLoading] variable
+  void _setLoading(bool loadingState) => setState(() => _isLoading = loadingState);
 
+  /// Callback called when you want to log a user
   void _login(BuildContext context) {
     // Get ExpensesTrackerApi from context
     final expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
@@ -66,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,8 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       body: Center(
         child: Padding(
-            padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
-            child: Stack(children: [
+          padding: const EdgeInsets.fromLTRB(20.0, 30.0, 20.0, 20.0),
+          child: Stack(
+            children: [
               Form(
                 key: _formKey,
                 child: Column(
@@ -115,7 +118,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               if (_isLoading) const ApiLoadingIndicator(),
-            ])),
+            ],
+          ),
+        ),
       ),
     );
   }

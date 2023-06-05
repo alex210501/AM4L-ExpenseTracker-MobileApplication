@@ -10,6 +10,7 @@ class QrCode extends StatelessWidget {
   /// Constructor
   const QrCode({super.key, required this.qrCodeMessage, required this.onPressed});
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Center(

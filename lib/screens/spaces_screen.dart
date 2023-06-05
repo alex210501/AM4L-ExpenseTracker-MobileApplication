@@ -12,18 +12,22 @@ import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indica
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
+/// Show the spaces of a user
 class SpacesScreen extends StatefulWidget {
   /// Constructor
   const SpacesScreen({super.key});
 
+  /// Override createState
   @override
   State<SpacesScreen> createState() => _SpacesScreenState();
 }
 
+/// State for [SpacesScreen]
 class _SpacesScreenState extends State<SpacesScreen> {
   late ExpensesTrackerApi _expensesTrackerApi;
   final FabController _fabController = FabController();
 
+  /// Callback used when you join a [Space]
   void _joinSpace(BuildContext context, String spaceId, {bool popContext = false}) {
     _expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
       // Get information from the space joined
@@ -38,6 +42,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     }).catchError((err) => showErrorDialog(context, err));
   }
 
+  /// Join a space using a [Dialog]
   _onJoinSpaceDialog(BuildContext context, String spaceId) {
     _joinSpace(context, spaceId, popContext: true);
 
@@ -47,28 +52,31 @@ class _SpacesScreenState extends State<SpacesScreen> {
     }
   }
 
+  /// Open a [Dialog] to join a [Space]
   void _openDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          String spaceId = '';
+      context: context,
+      builder: (BuildContext context) {
+        String spaceId = '';
 
-          return AlertDialog(
-            title: const Text('Join space'),
-            content: TextField(
-              onChanged: (value) => spaceId = value,
-              decoration: const InputDecoration(hintText: 'Enter a space ID'),
+        return AlertDialog(
+          title: const Text('Join space'),
+          content: TextField(
+            onChanged: (value) => spaceId = value,
+            decoration: const InputDecoration(hintText: 'Enter a space ID'),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => _onJoinSpaceDialog(context, spaceId),
+              child: const Text('Join'),
             ),
-            actions: [
-              ElevatedButton(
-                onPressed: () => _onJoinSpaceDialog(context, spaceId),
-                child: const Text('Join'),
-              ),
-            ],
-          );
-        });
+          ],
+        );
+      },
+    );
   }
 
+  /// Callback used to delete a [Space]
   _deleteSpace(BuildContext context, Space space) {
     _expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
       // Get and update the SpacesListModel
@@ -76,6 +84,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     }).catchError((err) => showErrorDialog(context, err));
   }
 
+  /// Callback used to show the information of a [Space]
   _goToSpaceInfo(BuildContext context) {
     Navigator.pushNamed(context, '/space/info', arguments: null);
 
@@ -89,6 +98,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     }
   }
 
+  /// Callback used to scan a QR Code
   _goToQrScanner(BuildContext context) {
     Navigator.pushNamed(context, '/space/qrcode').then((spaceId) {
       if (spaceId != null) {
@@ -102,6 +112,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     }
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     // Get ExpensesTrackerApi from context
@@ -141,24 +152,25 @@ class _SpacesScreenState extends State<SpacesScreen> {
   }
 }
 
+/// Show the space in the form of a [ListView]
 class _SpaceListView extends StatefulWidget {
   final void Function(Space) onDelete;
 
+  /// Constructor
   const _SpaceListView({required this.onDelete});
 
+  /// Override createState
   @override
   State<_SpaceListView> createState() => _SpaceListViewState();
 }
 
+/// State for [_SpaceListView]
 class _SpaceListViewState extends State<_SpaceListView> {
   late ExpensesTrackerApi _expensesTrackerApi;
   bool _isLoading = false;
 
-  void _setLoading(bool loadingMode) {
-    setState(() {
-      _isLoading = loadingMode;
-    });
-  }
+  /// Set [_isLoading]
+  void _setLoading(bool loadingMode) => setState(() => _isLoading = loadingMode);
 
   /// Load categories from API
   Future<List<Category>> _loadCategories(BuildContext context, Space space) {
@@ -166,6 +178,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
     return _expensesTrackerApi.categoryApi.getCategories(space.id);
   }
 
+  /// Callback used to show the informations of a [Space]
   void _goToSpaceInfo(BuildContext context, Space space) {
     // Load the categories from the API
     _loadCategories(context, space).then((categories) {
@@ -176,9 +189,10 @@ class _SpaceListViewState extends State<_SpaceListView> {
     });
   }
 
+  /// Callback used to show the expenses of a [Space]
   void _goToExpensesScreen(BuildContext context, Space space) {
     _setLoading(true);
-
+    // Get expenses from the space
     _expensesTrackerApi.expenseApi.getExpenses(space.id).then((expenses) {
       _setLoading(false);
 
@@ -204,6 +218,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
     spacesListModel.setSpaces(await _expensesTrackerApi.spaceApi.getSpaces());
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     final spaces = getSpacesListModel(context).spaces;

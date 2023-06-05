@@ -16,6 +16,7 @@ class SettingsScreen extends StatelessWidget {
     themeSelection.toggle();
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     // Get the current theme

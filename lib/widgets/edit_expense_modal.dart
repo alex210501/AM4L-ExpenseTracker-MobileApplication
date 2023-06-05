@@ -9,6 +9,7 @@ import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indica
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/floatnumber_formfield.dart';
 
+/// Show the modal to edit an [Expense]
 Future<Expense?> showEditExpenseModal(BuildContext context, Space space, {String? expenseId}) {
   return showModalBottomSheet(
       context: context,
@@ -21,20 +22,24 @@ Future<Expense?> showEditExpenseModal(BuildContext context, Space space, {String
       });
 }
 
+/// Form to edit an expense
 class ExpenseForm extends StatefulWidget {
   final String spaceId;
   final String? expenseId;
 
+  /// Constructor
   const ExpenseForm({
     super.key,
     required this.spaceId,
     this.expenseId,
   });
 
+  /// Override createState
   @override
   State<ExpenseForm> createState() => _ExpenseFormState();
 }
 
+/// State for [ExpenseForm]
 class _ExpenseFormState extends State<ExpenseForm> {
   bool _isLoading = false;
   bool _firstBuild = true;
@@ -45,11 +50,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _costController = TextEditingController();
 
-  void _setLoading(bool loadingMode) {
-    setState(() {
-      _isLoading = loadingMode;
-    });
-  }
+  /// Set [_isLoading]
+  void _setLoading(bool loadingMode) => setState(() => _isLoading = loadingMode);
 
   /// Save the expense to the API
   void _onSave(BuildContext context) {
@@ -89,7 +91,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     }
   }
 
-  /// Load expense from ExpensesListModel
+  /// Load expense from [ExpensesListModel]
   void _loadExpense(BuildContext context) {
     // Check if the expense is a new one or you must update an existing one
     if (widget.expenseId == null) {
@@ -106,13 +108,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
     _costController.text = _expense.cost.toString();
   }
 
-  void _onCategoryChanged(Category? newCategory) {
-    setState(() {
-      _category = newCategory;
-    });
-  }
+  /// Callback used when the [Category] has changed
+  void _onCategoryChanged(Category? newCategory) => setState(() => _category = newCategory);
 
-  /// Dispose the widget
+  /// Dispose the widgets
   @override
   void dispose() {
     // Clear resources used by TextEditingController
@@ -122,6 +121,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
     super.dispose();
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     // If it is the first build, load the expense
@@ -194,16 +194,15 @@ class _ExpenseFormState extends State<ExpenseForm> {
   }
 }
 
+/// Create a [DropdownButton] to choose a [Category]
 class _CategoryDropdownButton extends StatelessWidget {
   final Category? dropdownValue;
   final void Function(Category?) onChanged;
 
-  const _CategoryDropdownButton({
-    super.key,
-    required this.dropdownValue,
-    required this.onChanged,
-  });
+  /// Constructor
+  const _CategoryDropdownButton({required this.dropdownValue, required this.onChanged});
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     // Load categories

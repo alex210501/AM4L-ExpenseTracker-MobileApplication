@@ -1,3 +1,4 @@
+/// Model for Space
 class Space {
   final String id;
   String name;
@@ -5,6 +6,7 @@ class Space {
   final String admin;
   List<String> collaborators;
 
+  /// Constructor
   Space(
       {required this.id,
       required this.name,

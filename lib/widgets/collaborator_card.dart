@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 
+/// Create a card to display the collaborator information
 class CollaboratorCard extends StatelessWidget {
   final Space space;
   final String collaborator;
@@ -15,17 +16,14 @@ class CollaboratorCard extends StatelessWidget {
     required this.onDelete,
   });
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         title: Text(collaborator),
         trailing: IconButton(
-          onPressed: () => onDelete(
-              context,
-              space.id,
-              collaborator
-          ),
+          onPressed: () => onDelete(context, space.id, collaborator),
           icon: const Icon(Icons.delete),
         ),
       ),

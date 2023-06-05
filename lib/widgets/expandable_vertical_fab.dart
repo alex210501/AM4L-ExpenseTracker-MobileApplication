@@ -13,6 +13,7 @@ const animationTime = 500; // milliseconds
 /// Convert degrees to radians
 double degreeToRadian(double degrees) => degrees * pi / 180;
 
+/// Expendable [FloatingActionButton]
 class ExpandableVerticalFAB extends StatefulWidget {
   final FabController fabController;
   final double distance;
@@ -22,6 +23,7 @@ class ExpandableVerticalFAB extends StatefulWidget {
   final void Function(BuildContext)? onOpen;
   final void Function(BuildContext)? onClose;
 
+  /// Constructor
   const ExpandableVerticalFAB({
     super.key,
     required this.children,
@@ -33,10 +35,12 @@ class ExpandableVerticalFAB extends StatefulWidget {
     this.onClose,
   });
 
+  /// Override createState
   @override
   State<ExpandableVerticalFAB> createState() => _ExpandableVerticalFABState();
 }
 
+/// State for [ExpandableVerticalFAB]
 class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
     with TickerProviderStateMixin {
   bool _isOpen = false;
@@ -57,6 +61,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
     _buttonRotationController.reverse();
   }
 
+  /// Open the FAB
   void _open(BuildContext context) {
     setState(() {
       _isOpen = true;
@@ -70,6 +75,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
     _forwardAnimation();
   }
 
+  /// Close the FAB
   void _close(BuildContext context) {
     setState(() {
       _isOpen = false;
@@ -83,6 +89,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
     _reverseAnimation();
   }
 
+  /// Toggle the state of the FAB
   void _toggle(BuildContext context) {
     setState(() {
       _isOpen = !_isOpen;
@@ -101,45 +108,47 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
     });
   }
 
-  Widget _openButton() {
+  /// Create the toggle button
+  Widget _getToggleButton() {
     return Transform.rotate(
-        // opacity: _isOpen ? 0.0 : 1.0,
-        angle: _buttonRotationAnimation.value,
-        child: IgnorePointer(
-            ignoring: false,
-            child: FloatingActionButton(
-              onPressed: () => _toggle(context),
-              child: const Icon(Icons.add),
-            )));
+      angle: _buttonRotationAnimation.value,
+      child: IgnorePointer(
+        ignoring: false,
+        child: FloatingActionButton(
+          onPressed: () => _toggle(context),
+          child: const Icon(Icons.add),
+        ),
+      ),
+    );
   }
 
+  /// Create the children that will be displayed vertically
   List<Widget> _createVerticalChildren() {
     final verticalChildren = <Widget>[];
 
-    // if (_isOpen) {
+    /// Add every child to verticalChildren and apply its animation
     widget.children.asMap().forEach((index, child) {
       final endBottom = widget.offsetY + widget.distance * (index + 1);
 
-      verticalChildren.add(AnimatedPositioned(
-        duration: const Duration(milliseconds: animationTime),
-        curve: Curves.fastOutSlowIn,
-        bottom: _isOpen ? endBottom : 20.0, // _animations[_animations.length - 1].value,
-        right: widget.offsetX,
-        // onEnd: () => setState(() => _buttonOpacity = _isOpen ? 1.0 : 0.0),
-        child: IgnorePointer(
-          ignoring: !_isOpen,
-          child: Opacity(
-            opacity: _buttonOpacityAnimation.value,
-            child: child,
-          ),
+      verticalChildren.add(
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: animationTime),
+          curve: Curves.fastOutSlowIn,
+          bottom: _isOpen ? endBottom : 20.0,
+          right: widget.offsetX,
+          child: IgnorePointer(
+              ignoring: !_isOpen,
+              child: Opacity(opacity: _buttonOpacityAnimation.value, child: child)),
         ),
-      ));
+      );
     });
-    // }
 
     return verticalChildren;
   }
 
+  /// Override initState
+  ///
+  /// Create the animations
   @override
   void initState() {
     super.initState();
@@ -168,6 +177,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
     )..addListener(() => setState(() {}));
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     // Set the controller function
@@ -188,7 +198,7 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
           alignment: Alignment.bottomCenter,
           clipBehavior: Clip.none,
           children: [
-            _openButton(),
+            _getToggleButton(),
             ..._createVerticalChildren(),
           ],
         ),

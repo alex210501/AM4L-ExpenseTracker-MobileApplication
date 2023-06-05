@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 
 /// Circular progress indicator for login
 class ApiLoadingIndicator extends StatelessWidget {
+  /// Construtor
   const ApiLoadingIndicator({super.key});
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Center(

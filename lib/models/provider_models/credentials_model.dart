@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 
-
 /// Store the credentials of the current user
 class CredentialsModel extends ChangeNotifier {
   String _username = '';
 
-  /// Getter for the username
-  String get username {
-    return _username;
-  }
+  /// Getter for the [username]
+  String get username => _username;
 
   /// Setter for the username
   set username(String newUsername) {
@@ -18,7 +15,5 @@ class CredentialsModel extends ChangeNotifier {
   }
 
   /// Clear credentials
-  void clear() {
-    _username = '';
-  }
+  void clear() => _username = '';
 }

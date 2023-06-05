@@ -18,9 +18,8 @@ Future<dynamic> sendHttpRequest(ApiRequest apiRequest) async {
   throw Exception(response.content['msg'] ?? 'Unknown error');
 }
 
-String getTokenHeader(String token) {
-  return 'Bearer $token';
-}
+/// Get the bearer token
+String getTokenHeader(String token) => 'Bearer $token';
 
 /// Make the actual HTTP request
 Future<http.Response> _makeRequest(ApiRequest apiRequest) {

@@ -3,16 +3,15 @@ import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 
+/// Expenses list model used in Provider
 class ExpensesListModel extends ChangeNotifier {
   List<Expense> _expenses = [];
 
   /// Getter for the expenses
-  List<Expense> get expenses {
-    return UnmodifiableListView(_expenses);
-  }
+  List<Expense> get expenses => UnmodifiableListView(_expenses);
 
   /// Set new expenses
-  void setExpenses(List<Expense> newExpenses, { bool notify = true }) {
+  void setExpenses(List<Expense> newExpenses, {bool notify = true}) {
     _expenses = List.from(newExpenses);
 
     if (notify) {
@@ -26,7 +25,7 @@ class ExpensesListModel extends ChangeNotifier {
   }
 
   /// Add a new expense to the list
-  void addExpense(Expense newExpense, { bool notify = true }) {
+  void addExpense(Expense newExpense, {bool notify = true}) {
     _expenses.insert(0, newExpense);
 
     if (notify) {
@@ -34,8 +33,8 @@ class ExpensesListModel extends ChangeNotifier {
     }
   }
 
-  /// Remove an expense given it ID
-  void removeExpenseByID(String expenseId, { bool notify = true }) {
+  /// Remove an expense given it [expenseId]
+  void removeExpenseByID(String expenseId, {bool notify = true}) {
     _expenses.removeWhere((expense) => expense.id == expenseId);
 
     if (notify) {
@@ -49,9 +48,9 @@ class ExpensesListModel extends ChangeNotifier {
   }
 
   /// Update an expense
-  void updateExpense(Expense newExpense, { bool notify = true }) {
+  void updateExpense(Expense newExpense, {bool notify = true}) {
     _expenses.forEach((expense) {
-      if(expense.id == newExpense.id) {
+      if (expense.id == newExpense.id) {
         expense.description = newExpense.description;
         expense.cost = newExpense.cost;
         expense.category = newExpense.category;

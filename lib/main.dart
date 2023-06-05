@@ -16,7 +16,6 @@ import 'package:am4l_expensetracker_mobileapplication/screens/space_information_
 import 'package:am4l_expensetracker_mobileapplication/screens/spaces_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/qrcode_scanner_screen.dart';
 import 'package:am4l_expensetracker_mobileapplication/screens/settings_screen.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 
 /// Entry point
 void main() {

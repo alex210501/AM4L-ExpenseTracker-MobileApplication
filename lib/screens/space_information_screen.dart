@@ -12,18 +12,21 @@ import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
+/// Screen that show the information of a [Space]
 class SpaceInformationScreen extends StatefulWidget {
   /// Default constructor
   const SpaceInformationScreen({super.key});
 
+  /// Override createState
   @override
   State<SpaceInformationScreen> createState() => _SpaceInformationScreenState();
 }
 
+/// State for SpaceInformationScreen
 class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
-  late ExpensesTrackerApi _expensesTrackerApi;
   bool _isNewSpace = false;
   bool _showQrCode = false;
+  late ExpensesTrackerApi _expensesTrackerApi;
   late Space _space;
   late TextEditingController _descriptionController;
   late TextEditingController _nameController;
@@ -46,7 +49,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     _nameController = TextEditingController(text: _space.name);
   }
 
-  /// Save space
+  /// Callback used when you want to save the space information
   void _saveSpace(BuildContext context) {
     // Load data from input into space
     _space.name = _nameController.text;
@@ -76,7 +79,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     }
   }
 
-  /// Add a collaborator to a space
+  /// Callback to add a collaborator to a space
   void _addCollaboratorToSpace(BuildContext context, String spaceId, String collaborator) {
     _expensesTrackerApi.userSpaceApi.addUser(spaceId, collaborator).then((_) {
       _space.collaborators.add(collaborator);
@@ -84,7 +87,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     });
   }
 
-  /// Delete a collaborator from a space
+  /// Callback to a collaborator from a space
   void _deleteCollaboratorFromSpace(BuildContext context, String spaceId, String collaborator) {
     _expensesTrackerApi.userSpaceApi.deleteUser(spaceId, collaborator).then((_) {
       _space.collaborators.remove(collaborator);
@@ -92,7 +95,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     });
   }
 
-  /// Copy the space ID to the clipboard
+  /// Callback to copy the space ID to the clipboard
   void _copySpaceIdToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: _space.id));
 
@@ -101,21 +104,21 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
         .showSnackBar(const SnackBar(content: Text('Space ID copied to the clipboard!')));
   }
 
-  /// Add a new category
+  /// Callback to add a new category
   void _addCategoryToSpace(BuildContext context, String spaceId, String categoryTitle) {
     _expensesTrackerApi.categoryApi.createCategory(spaceId, categoryTitle).then((category) {
       getCategoriesListModel(context).addCategory(category);
     });
   }
 
-  /// Delete a category
+  /// Callback to delete a category
   void _deleteCategoryFromSpace(BuildContext context, String spaceId, String categoryId) {
     _expensesTrackerApi.categoryApi.removeCategory(spaceId, categoryId).then((_) {
       getCategoriesListModel(context).removeCategoryById(categoryId);
     });
   }
 
-  /// Quit a space
+  /// Callback to quit a space
   void _onQuitSpace(BuildContext context, String spaceId) {
     _expensesTrackerApi.userSpaceApi.quitSpace(spaceId).then((_) {
       getSpacesListModel(context).removeSpaceBySpaceID(spaceId);
@@ -123,8 +126,8 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     }).catchError((err) => showErrorDialog(context, err));
   }
 
-  /// Get the ID text
-  RichText _getIdText() {
+  /// Get the text to display the ID line
+  Widget _getIdText() {
     return RichText(
       text: TextSpan(style: const TextStyle(color: Colors.black), children: [
         const TextSpan(
@@ -137,6 +140,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     );
   }
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     _loadSpaceFromRouteArgument(context);
@@ -223,14 +227,17 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   }
 }
 
+/// Create a form text
 @immutable
 class _SpaceInfoTextForm extends StatelessWidget {
   final String title;
   final TextEditingController controller;
   final String? Function(String?)? validator;
 
+  /// Constructor
   const _SpaceInfoTextForm({required this.title, required this.controller, this.validator});
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -252,6 +259,7 @@ class _SpaceInfoTextForm extends StatelessWidget {
   }
 }
 
+/// Show a view of the collaborators of the space
 @immutable
 class _ListViewCollaborator extends StatelessWidget {
   final Space space;
@@ -265,6 +273,7 @@ class _ListViewCollaborator extends StatelessWidget {
     required this.onAddCollaborator,
   });
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     final collaborators = space.collaborators;
@@ -301,6 +310,7 @@ class _ListViewCollaborator extends StatelessWidget {
   }
 }
 
+/// Tile to add a new Collaborator or Category to the Space
 class _AddTile extends StatelessWidget {
   final Space space;
   final void Function(BuildContext, String, String) onAdd;
@@ -312,12 +322,11 @@ class _AddTile extends StatelessWidget {
     required this.onAdd,
   });
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: TextField(
-        controller: _userToAddController,
-      ),
+      title: TextField(controller: _userToAddController),
       trailing: IconButton(
         onPressed: () => onAdd(context, space.id, _userToAddController.text),
         icon: const Icon(Icons.add),
@@ -326,54 +335,58 @@ class _AddTile extends StatelessWidget {
   }
 }
 
+/// Display the categories using a [ListView]
 class _ListViewCategories extends StatelessWidget {
   final Space space;
   final void Function(BuildContext, String, String) onAddCategory;
   final void Function(BuildContext, String, String) onDeleteCategory;
 
+  /// Constructor
   const _ListViewCategories({
-    super.key,
     required this.space,
     required this.onAddCategory,
     required this.onDeleteCategory,
   });
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     final categories = getCategoriesListModel(context).categories;
 
     return Center(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Categories',
-          textAlign: TextAlign.justify,
-          style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-        ),
-        Flexible(
-          child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: categories.length + 1,
-              itemBuilder: (context, index) {
-                return (index != categories.length)
-                    ? CategoryCard(
-                        space: space,
-                        category: categories[index],
-                        onDelete: onDeleteCategory,
-                      )
-                    : _AddTile(
-                        space: space,
-                        onAdd: onAddCategory,
-                      );
-              }),
-        )
-      ],
-    ));
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Categories',
+            textAlign: TextAlign.justify,
+            style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+          ),
+          Flexible(
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: categories.length + 1,
+                itemBuilder: (context, index) {
+                  return (index != categories.length)
+                      ? CategoryCard(
+                          space: space,
+                          category: categories[index],
+                          onDelete: onDeleteCategory,
+                        )
+                      : _AddTile(
+                          space: space,
+                          onAdd: onAddCategory,
+                        );
+                }),
+          ),
+        ],
+      ),
+    );
   }
 }
 
+/// Card to display a [Category]
 class CategoryCard extends StatelessWidget {
   final Space space;
   final Category category;
@@ -387,6 +400,7 @@ class CategoryCard extends StatelessWidget {
     required this.onDelete,
   });
 
+  /// Override build
   @override
   Widget build(BuildContext context) {
     return Card(

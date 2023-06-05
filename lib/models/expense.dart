@@ -1,3 +1,4 @@
+/// Model for an Expense
 class Expense {
   final String id;
   double cost;
@@ -6,6 +7,7 @@ class Expense {
   String? category;
   final String paidBy;
 
+  /// Constructor
   Expense(
       {required this.id,
       required this.cost,
@@ -14,6 +16,7 @@ class Expense {
       required this.category,
       required this.paidBy});
 
+  /// Constructor from a JSON
   Expense.fromJson(Map<String, dynamic> jsonData)
       : id = jsonData['expense_id'] ?? '',
         cost = (jsonData['expense_cost'] ?? 0.0).toDouble(),
@@ -22,6 +25,7 @@ class Expense {
         category = jsonData['expense_category'],
         paidBy = jsonData['expense_paid_by'] ?? '';
 
+  /// Constructor with default values
   Expense.defaultValues()
       : id = '',
         cost = 0.0,

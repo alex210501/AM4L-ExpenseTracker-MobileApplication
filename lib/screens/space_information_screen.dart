@@ -148,7 +148,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
         actions: [
           if (!_isNewSpace)
             IconButton(
-                onPressed: () => setState(() => _showQrCode = false),
+                onPressed: () => setState(() => _showQrCode = true),
                 icon: const Icon(Icons.qr_code_rounded, color: Colors.white)),
           TextButton(
             onPressed: () => _saveSpace(context),

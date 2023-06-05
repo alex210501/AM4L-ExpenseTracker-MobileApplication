@@ -98,6 +98,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
 class _InformationLine extends StatelessWidget {
   final String title;
   final String info;
+  final double _fontSize = 15.0;
 
   /// Constructor
   const _InformationLine({required this.title, required this.info});
@@ -105,14 +106,11 @@ class _InformationLine extends StatelessWidget {
   /// Override build
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(color: Colors.black, fontSize: 15.0),
-        children: [
-          TextSpan(text: title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          TextSpan(text: ': $info'),
-        ],
-      ),
+    return Row(
+      children: [
+        Text(title, style: TextStyle(fontSize: _fontSize, fontWeight: FontWeight.bold)),
+        Text(': $info', style: TextStyle(fontSize: _fontSize)),
+      ],
     );
   }
 }

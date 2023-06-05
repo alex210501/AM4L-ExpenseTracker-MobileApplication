@@ -104,7 +104,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _expense = Expense.defaultValues();
       _isNewExpense = true;
     } else {
-      // TODO: Show an error if the requested expense is not on the list
       _expense = Provider.of<ExpensesListModel>(context).getExpenseByID(widget.expenseId!) ??
           Expense.defaultValues();
       _category = Provider.of<CategoriesListModel>(context, listen: false)
@@ -145,9 +144,14 @@ class _ExpenseFormState extends State<ExpenseForm> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
+          leadingWidth: 80,
           title: Text(_isNewExpense ? 'New expense' : _expense.description),
           leading: TextButton(
-            child: const Text('Cancel', style: TextStyle(color: Colors.white)),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white),
+              softWrap: false,
+            ),
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
@@ -157,37 +161,42 @@ class _ExpenseFormState extends State<ExpenseForm> {
             ),
           ],
         ),
-        body: Stack(
-          children: [
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _descriptionController,
-                    decoration: const InputDecoration(hintText: "Expense description"),
-                    validator: (text) {
-                      return (text == null || text.isEmpty) ? "Description cannot be empty!" : null;
-                    },
-                  ),
-                  FloatNumberFormField(
-                    controller: _costController,
-                    decoration: const InputDecoration(hintText: "Cost"),
-                  ),
-                  Row(
-                    children: [
-                      const Text('Category: ', style: TextStyle(fontSize: 15.0)),
-                      _CategoryDropdownButton(
-                        dropdownValue: _category,
-                        onChanged: _onCategoryChanged,
-                      ),
-                    ],
-                  )
-                ],
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Stack(
+            children: [
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(hintText: "Expense description"),
+                      validator: (text) {
+                        return (text == null || text.isEmpty)
+                            ? "Description cannot be empty!"
+                            : null;
+                      },
+                    ),
+                    FloatNumberFormField(
+                      controller: _costController,
+                      decoration: const InputDecoration(hintText: "Cost"),
+                    ),
+                    Row(
+                      children: [
+                        const Text('Category: ', style: TextStyle(fontSize: 15.0)),
+                        _CategoryDropdownButton(
+                          dropdownValue: _category,
+                          onChanged: _onCategoryChanged,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
-            ),
-            if (_isLoading) const ApiLoadingIndicator(),
-          ],
+              if (_isLoading) const ApiLoadingIndicator(),
+            ],
+          ),
         ),
       ),
     );

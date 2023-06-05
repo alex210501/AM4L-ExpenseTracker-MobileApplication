@@ -69,7 +69,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showEditExpenseModal(context, _space, widget.expensesTrackerApi),
-        backgroundColor: Theme.of(context).primaryColor,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -225,7 +224,7 @@ class _TotalExpensesColumn extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Your expenses', style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
           Text('$expenses €'),
         ],
       ),

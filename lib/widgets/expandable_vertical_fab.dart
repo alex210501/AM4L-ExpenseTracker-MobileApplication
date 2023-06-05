@@ -184,15 +184,13 @@ class _ExpandableVerticalFABState extends State<ExpandableVerticalFAB>
       child: SizedBox(
         height: (widget.children.length + 1) * widget.distance,
         width: 50,
-        child: Container(
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            clipBehavior: Clip.none,
-            children: [
-              _openButton(),
-              ..._createVerticalChildren(),
-            ],
-          ),
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          clipBehavior: Clip.none,
+          children: [
+            _openButton(),
+            ..._createVerticalChildren(),
+          ],
         ),
       ),
     );

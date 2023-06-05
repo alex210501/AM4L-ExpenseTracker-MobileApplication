@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/preference_tools.dart';
 
-/// Setting screen
-class SettingsScreen extends StatelessWidget {
+/// Show the settings
+class SettingsScreen extends StatefulWidget {
   /// Constructor
   const SettingsScreen({super.key});
 
+  /// Override createState
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+/// State for [SettingsScreen]
+class _SettingsScreenState extends State<SettingsScreen> {
   /// On changed switch for dark theme
   void _onChangedDarkTheme(BuildContext context) {
-    // Get selection theme
-    final themeSelection = getThemeSelection(context);
+    setState(() {
+      // Get selection theme
+      final themeSelection = getThemeSelection(context);
 
-    // Toggle the value
-    themeSelection.toggle();
+      // Toggle the value
+      themeSelection.toggle();
+
+      // Memorize the theme in preferences
+      setDarkThemePref(themeSelection.isDarkTheme);
+    });
   }
 
   /// Override build
@@ -30,10 +43,7 @@ class SettingsScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Dark theme',
-                style: TextStyle(fontSize: 15.0),
-              ),
+              const Text('Dark theme', style: TextStyle(fontSize: 15.0)),
               Switch(value: isDarkTheme, onChanged: (_) => _onChangedDarkTheme(context))
             ],
           ),

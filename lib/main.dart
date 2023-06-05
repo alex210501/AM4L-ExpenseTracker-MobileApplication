@@ -46,9 +46,7 @@ class MyApp extends StatelessWidget {
                 title: 'Expense Tracker',
                 theme: themeSelection.isDarkTheme
                     ? ThemeData.dark()
-                    : ThemeData(
-                        primarySwatch: Colors.blue,
-                      ),
+                    : ThemeData(primarySwatch: Colors.blue),
                 initialRoute: '/login',
                 routes: {
                   '/login': (context) => const LoginScreen(),

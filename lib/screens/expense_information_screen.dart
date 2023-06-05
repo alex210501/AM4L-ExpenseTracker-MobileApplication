@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/categories_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 
 class ExpenseInformationScreen extends StatefulWidget {
@@ -32,8 +31,8 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
     _expenseId = arguments['expenseId'] ?? '';
 
     // Load expense
-    _space = Provider.of<SpacesListModel>(context, listen: false).getSpaceByID(_spaceId)!;
-    _expense = Provider.of<ExpensesListModel>(context, listen: false).getExpenseByID(_expenseId)!;
+    _space = getSpacesListModel(context).getSpaceByID(_spaceId)!;
+    _expense = getExpensesListModel(context).getExpenseByID(_expenseId)!;
   }
 
   void _onEdit(BuildContext context) async {
@@ -58,8 +57,7 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
     _loadFromArguments(context);
 
     // Take the category of the expense
-    final category = Provider.of<CategoriesListModel>(context, listen: false)
-        .getCategoryById(_expense.category ?? '');
+    final category = getCategoriesListModel(context).getCategoryById(_expense.category ?? '');
 
     return Consumer<ExpensesListModel>(builder: (context, card, child) {
       return Scaffold(

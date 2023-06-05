@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
-
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/credentials_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
@@ -33,14 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login(BuildContext context) {
     // Get ExpensesTrackerApi from context
-    final expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
-      context,
-      listen: false,
-    ).expensesTrackerApi;
+    final expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
 
     // Get the SpacesListModel from context
-    final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
-    final expensesListModel = Provider.of<ExpensesListModel>(context, listen: false);
+    final spacesListModel = getSpacesListModel(context);
+    final expensesListModel = getExpensesListModel(context);
 
     // Clear the information memorized from last session
     spacesListModel.clearSpaces();
@@ -64,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushNamed(context, '/space');
 
         // Set the credential to the current username
-        Provider.of<CredentialsModel>(context, listen: false).username = username;
+        getCredentialsModel(context).username = username;
 
         _setLoading(false);
       });

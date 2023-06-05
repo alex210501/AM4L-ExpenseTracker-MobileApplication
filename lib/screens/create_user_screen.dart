@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
-
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/user.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 class CreateUserScreen extends StatefulWidget {
@@ -18,10 +16,7 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   /// Create User
   _createUser(BuildContext context, User user, String password) {
     // Get the ExpensesTrackerApi from context
-    final expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
-      context,
-      listen: false,
-    ).expensesTrackerApi;
+    final expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
 
     // Make request to create user
     expensesTrackerApi.userApi

@@ -1,14 +1,10 @@
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/categories_list_model.dart';
 import 'package:flutter/material.dart';
-
-import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/floatnumber_formfield.dart';
@@ -63,10 +59,8 @@ class _ExpenseFormState extends State<ExpenseForm> {
     }
 
     // Get ExpensesTrackerApi from context
-    final expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
-      context,
-      listen: false,
-    ).expensesTrackerApi;
+    final expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
+    final expensesListModel = getExpensesListModel(context);
 
     // Take the values from the controllers
     _expense.cost = roundDoubleToDecimals(double.parse(_costController.text));
@@ -83,13 +77,13 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
       expensesTrackerApi.expenseApi.createExpense(widget.spaceId, _expense).then((newExpense) {
         _setLoading(false);
-        Provider.of<ExpensesListModel>(context, listen: false).addExpense(newExpense);
+        expensesListModel.addExpense(newExpense);
         Navigator.pop(context);
       }).catchError((err) => showErrorDialog(context, err));
     } else {
       expensesTrackerApi.expenseApi.patchExpense(widget.spaceId, _expense).then((_) {
         _setLoading(false);
-        Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
+        expensesListModel.updateExpense(_expense);
         Navigator.pop(context, _expense);
       }).catchError((err) => showErrorDialog(context, err));
     }
@@ -102,10 +96,9 @@ class _ExpenseFormState extends State<ExpenseForm> {
       _expense = Expense.defaultValues();
       _isNewExpense = true;
     } else {
-      _expense = Provider.of<ExpensesListModel>(context).getExpenseByID(widget.expenseId!) ??
+      _expense = getExpensesListModel(context).getExpenseByID(widget.expenseId!) ??
           Expense.defaultValues();
-      _category = Provider.of<CategoriesListModel>(context, listen: false)
-          .getCategoryById(_expense.category ?? '');
+      _category = getCategoriesListModel(context).getCategoryById(_expense.category ?? '');
     }
 
     // Set the text from the TextEditingController
@@ -216,7 +209,7 @@ class _CategoryDropdownButton extends StatelessWidget {
     // Load categories
     final categories = [
       null,
-      ...Provider.of<CategoriesListModel>(context, listen: false).categories,
+      ...getCategoriesListModel(context).categories,
     ];
 
     return DropdownButton<Category?>(

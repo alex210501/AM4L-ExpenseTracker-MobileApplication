@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/credentials_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
@@ -26,7 +25,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   Space _space = Space.defaultValue();
 
   Future<void> _onRefresh(BuildContext context) async {
-    final expensesListModel = Provider.of<ExpensesListModel>(context, listen: false);
+    final expensesListModel = getExpensesListModel(context);
 
     try {
       // Get expenses from API
@@ -43,7 +42,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     /// Make request to delete expense
     _expensesTrackerApi.expenseApi
         .deleteExpense(_space.id, expense.id)
-        .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id))
+        .then((_) => getExpensesListModel(context).removeExpenseByID(expense.id))
         .catchError((err) => showErrorDialog(context, err));
   }
 
@@ -52,10 +51,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     final spaceArg = ModalRoute.of(context)!.settings.arguments;
 
     // Get ExpensesTrackerApi from context
-    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
-      context,
-      listen: false,
-    ).expensesTrackerApi;
+    _expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
 
     // Check if the space is passed as parameters, if not then return to the last screen
     if (spaceArg == null) {
@@ -119,7 +115,7 @@ class _ExpenseListView extends StatelessWidget {
   }
 
   Widget _getPaidByTitle(BuildContext context, Expense expense) {
-    final username = Provider.of<CredentialsModel>(context, listen: false).username;
+    final username = getCredentialsModel(context).username;
 
     return Row(
       children: [
@@ -134,33 +130,34 @@ class _ExpenseListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expenses = Provider.of<ExpensesListModel>(context).expenses;
+    final expenses = getExpensesListModel(context).expenses;
 
     return Center(
       child: ListView.builder(
         itemCount: expenses.length,
         itemBuilder: (context, index) {
           return Dismissible(
-              key: ValueKey<Expense>(expenses[index]),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                color: Colors.red,
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: const Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                ),
+            key: ValueKey<Expense>(expenses[index]),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
               ),
-              onDismissed: (_) => onDelete(context, expenses[index]),
-              child: Card(
-                child: ListTile(
-                  onTap: () => _onExpense(context, expenses[index]),
-                  title: Text(expenses[index].description),
-                  subtitle: _getPaidByTitle(context, expenses[index]),
-                  trailing: Text('${expenses[index].cost}€'),
-                ),
-              ));
+            ),
+            onDismissed: (_) => onDelete(context, expenses[index]),
+            child: Card(
+              child: ListTile(
+                onTap: () => _onExpense(context, expenses[index]),
+                title: Text(expenses[index].description),
+                subtitle: _getPaidByTitle(context, expenses[index]),
+                trailing: Text('${expenses[index].cost}€'),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -188,14 +185,14 @@ class ExpensesBottomAppBar extends StatelessWidget {
 
   /// Compute the total expenses of the current user
   double _getTotalUserExpenses(BuildContext context, List<Expense> expenses) {
-    final username = Provider.of<CredentialsModel>(context, listen: false).username;
+    final username = getCredentialsModel(context).username;
 
     return _getTotalExpenses(expenses, username: username);
   }
 
   @override
   Widget build(BuildContext context) {
-    final expenses = Provider.of<ExpensesListModel>(context, listen: false).expenses;
+    final expenses = getExpensesListModel(context).expenses;
 
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),

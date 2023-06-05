@@ -1,15 +1,13 @@
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/categories_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/fab_controller.dart';
+import 'package:am4l_expensetracker_mobileapplication/tools/provider_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
@@ -30,7 +28,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
     _expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
       // Get information from the space joined
       _expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
-        Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
+        getSpacesListModel(context).addSpace(newSpace);
 
         // Close the dialog if variable popContext set
         if (popContext) {
@@ -74,7 +72,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
   _deleteSpace(BuildContext context, Space space) {
     _expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
       // Get and update the SpacesListModel
-      Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(space.id);
+      getSpacesListModel(context).removeSpaceBySpaceID(space.id);
     }).catchError((err) => showErrorDialog(context, err));
   }
 
@@ -82,8 +80,8 @@ class _SpacesScreenState extends State<SpacesScreen> {
     Navigator.pushNamed(context, '/space/info', arguments: null);
 
     // Delete the categories and expenses memorized
-    Provider.of<ExpensesListModel>(context, listen: false).clearExpenses();
-    Provider.of<CategoriesListModel>(context, listen: false).clearCategories();
+    getExpensesListModel(context).clearExpenses();
+    getCategoriesListModel(context).clearCategories();
 
     // Close the FAB
     if (_fabController.close != null) {
@@ -107,10 +105,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
   @override
   Widget build(BuildContext context) {
     // Get ExpensesTrackerApi from context
-    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
-      context,
-      listen: false,
-    ).expensesTrackerApi;
+    _expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
 
     return Scaffold(
       appBar: AppBar(
@@ -174,7 +169,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
   void _goToSpaceInfo(BuildContext context, Space space) {
     // Load the categories from the API
     _loadCategories(context, space).then((categories) {
-      Provider.of<CategoriesListModel>(context, listen: false).setCategories(categories);
+      getCategoriesListModel(context).setCategories(categories);
 
       // Go to SpaceInformationScreen
       Navigator.pushNamed(context, '/space/info', arguments: space);
@@ -188,11 +183,11 @@ class _SpaceListViewState extends State<_SpaceListView> {
       _setLoading(false);
 
       // Set the expenses
-      Provider.of<ExpensesListModel>(context, listen: false).setExpenses(expenses);
+      getExpensesListModel(context).setExpenses(expenses);
 
       // Load the categories from the API
       _loadCategories(context, space).then((categories) {
-        Provider.of<CategoriesListModel>(context, listen: false).setCategories(categories);
+        getCategoriesListModel(context).setCategories(categories);
 
         // Go to ExpensesScreen
         Navigator.pushNamed(context, '/space/expenses', arguments: space);
@@ -203,7 +198,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
   /// Function to refresh the spaces
   Future<void> _onRefresh(BuildContext context) async {
     // Get SpacesListModel from context
-    final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
+    final spacesListModel = getSpacesListModel(context);
 
     // Add spaces to SpacesListModel
     spacesListModel.setSpaces(await _expensesTrackerApi.spaceApi.getSpaces());
@@ -211,13 +206,10 @@ class _SpaceListViewState extends State<_SpaceListView> {
 
   @override
   Widget build(BuildContext context) {
-    final spaces = Provider.of<SpacesListModel>(context, listen: false).spaces;
+    final spaces = getSpacesListModel(context).spaces;
 
     // Get ExpensesTrackerApi from context
-    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
-      context,
-      listen: false,
-    ).expensesTrackerApi;
+    _expensesTrackerApi = getExpensesTrackerApiModel(context).expensesTrackerApi;
 
     return Center(
       child: RefreshIndicator(

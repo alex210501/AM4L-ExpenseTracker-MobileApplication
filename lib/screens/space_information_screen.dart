@@ -128,16 +128,10 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
   /// Get the text to display the ID line
   Widget _getIdText() {
-    return RichText(
-      text: TextSpan(style: const TextStyle(color: Colors.black), children: [
-        const TextSpan(
-          text: 'ID',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        TextSpan(text: ': ${_space.id}')
-      ]),
-      overflow: TextOverflow.ellipsis,
-    );
+    return Row(children: [
+      const Text('ID', style: TextStyle(fontWeight: FontWeight.bold)),
+      Text(': ${_space.id}', overflow: TextOverflow.ellipsis),
+    ]);
   }
 
   /// Override build
@@ -278,6 +272,9 @@ class _ListViewCollaborator extends StatelessWidget {
   Widget build(BuildContext context) {
     final collaborators = space.collaborators;
 
+    /// Check if it is the admin
+    bool isAdmin = getCredentialsModel(context).username == space.admin;
+
     return Center(
         child: Column(
       mainAxisSize: MainAxisSize.min,
@@ -293,16 +290,20 @@ class _ListViewCollaborator extends StatelessWidget {
               shrinkWrap: true,
               itemCount: collaborators.length + 1,
               itemBuilder: (context, index) {
-                return (index != collaborators.length)
-                    ? CollaboratorCard(
-                        space: space,
-                        collaborator: collaborators[index],
-                        onDelete: onDeleteCollaborator,
-                      )
-                    : _AddTile(
-                        space: space,
-                        onAdd: onAddCollaborator,
-                      );
+                if (index != collaborators.length) {
+                  return CollaboratorCard(
+                    space: space,
+                    collaborator: collaborators[index],
+                    onDelete: onDeleteCollaborator,
+                  );
+                }
+
+                // Can add new user if it is the admin of the space
+                if (isAdmin) {
+                  return _AddTile(space: space, onAdd: onAddCollaborator);
+                }
+
+                return null;
               }),
         )
       ],
@@ -374,10 +375,7 @@ class _ListViewCategories extends StatelessWidget {
                           category: categories[index],
                           onDelete: onDeleteCategory,
                         )
-                      : _AddTile(
-                          space: space,
-                          onAdd: onAddCategory,
-                        );
+                      : _AddTile(space: space, onAdd: onAddCategory);
                 }),
           ),
         ],

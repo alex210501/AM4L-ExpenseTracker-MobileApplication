@@ -81,6 +81,10 @@ class _SpacesScreenState extends State<SpacesScreen> {
   _goToSpaceInfo(BuildContext context) {
     Navigator.pushNamed(context, '/space/info', arguments: null);
 
+    // Delete the categories and expenses memorized
+    Provider.of<ExpensesListModel>(context, listen: false).clearExpenses();
+    Provider.of<CategoriesListModel>(context, listen: false).clearCategories();
+
     // Close the FAB
     if (_fabController.close != null) {
       _fabController.close!();

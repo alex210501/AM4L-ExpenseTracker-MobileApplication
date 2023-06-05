@@ -188,14 +188,15 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
                 title: 'Description',
                 controller: _descriptionController,
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: _ListViewCollaborator(
-                  space: _space,
-                  onDeleteCollaborator: _deleteCollaboratorFromSpace,
-                  onAddCollaborator: _addCollaboratorToSpace,
+              if (!_isNewSpace)
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: _ListViewCollaborator(
+                    space: _space,
+                    onDeleteCollaborator: _deleteCollaboratorFromSpace,
+                    onAddCollaborator: _addCollaboratorToSpace,
+                  ),
                 ),
-              ),
               Consumer<CategoriesListModel>(builder: (context, card, child) {
                 return _ListViewCategories(
                   space: _space,

@@ -5,24 +5,20 @@ import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/floatnumber_formfield.dart';
 
-Future<Expense?> showEditExpenseModal(
-    BuildContext context, Space space, ExpensesTrackerApi expensesTrackerApi,
-    {String? expenseId}) {
+Future<Expense?> showEditExpenseModal(BuildContext context, Space space, {String? expenseId}) {
   return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return ExpenseForm(
-          expensesTrackerApi: expensesTrackerApi,
           spaceId: space.id,
           expenseId: expenseId,
         );
@@ -30,13 +26,11 @@ Future<Expense?> showEditExpenseModal(
 }
 
 class ExpenseForm extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
   final String spaceId;
   final String? expenseId;
 
   const ExpenseForm({
     super.key,
-    required this.expensesTrackerApi,
     required this.spaceId,
     this.expenseId,
   });
@@ -68,6 +62,12 @@ class _ExpenseFormState extends State<ExpenseForm> {
       return;
     }
 
+    // Get ExpensesTrackerApi from context
+    final expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
+
     // Take the values from the controllers
     _expense.cost = roundDoubleToDecimals(double.parse(_costController.text));
     _expense.description = _descriptionController.text;
@@ -81,15 +81,13 @@ class _ExpenseFormState extends State<ExpenseForm> {
       // Set the date to now
       _expense.date = DateTime.now();
 
-      widget.expensesTrackerApi.expenseApi
-          .createExpense(widget.spaceId, _expense)
-          .then((newExpense) {
+      expensesTrackerApi.expenseApi.createExpense(widget.spaceId, _expense).then((newExpense) {
         _setLoading(false);
         Provider.of<ExpensesListModel>(context, listen: false).addExpense(newExpense);
         Navigator.pop(context);
       }).catchError((err) => showErrorDialog(context, err));
     } else {
-      widget.expensesTrackerApi.expenseApi.patchExpense(widget.spaceId, _expense).then((_) {
+      expensesTrackerApi.expenseApi.patchExpense(widget.spaceId, _expense).then((_) {
         _setLoading(false);
         Provider.of<ExpensesListModel>(context, listen: false).updateExpense(_expense);
         Navigator.pop(context, _expense);

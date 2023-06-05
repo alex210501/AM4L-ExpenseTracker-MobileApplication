@@ -6,24 +6,24 @@ import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/categories_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/collaborator_card.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
 class SpaceInformationScreen extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
-
   /// Default constructor
-  const SpaceInformationScreen({super.key, required this.expensesTrackerApi});
+  const SpaceInformationScreen({super.key});
 
   @override
   State<SpaceInformationScreen> createState() => _SpaceInformationScreenState();
 }
 
 class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
-  bool isNewSpace = false;
+  late ExpensesTrackerApi _expensesTrackerApi;
+  bool _isNewSpace = false;
   bool _showQrCode = false;
   late Space _space;
   late TextEditingController _descriptionController;
@@ -35,10 +35,10 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
     // If the space is not passed to the function, go back to the last screen
     if (spaceArg == null) {
-      isNewSpace = true;
+      _isNewSpace = true;
       _space = Space.defaultValue();
     } else {
-      isNewSpace = false;
+      _isNewSpace = false;
       _space = spaceArg as Space;
     }
 
@@ -54,8 +54,8 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
     _space.description = _descriptionController.text;
 
     // Create or update the space
-    if (isNewSpace) {
-      widget.expensesTrackerApi.spaceApi.createSpace(_space).then((newSpace) {
+    if (_isNewSpace) {
+      _expensesTrackerApi.spaceApi.createSpace(_space).then((newSpace) {
         // Go to previous page
         Navigator.pop(context);
 
@@ -63,7 +63,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
         Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
       });
     } else {
-      widget.expensesTrackerApi.spaceApi.updateSpace(_space).then((_) {
+      _expensesTrackerApi.spaceApi.updateSpace(_space).then((_) {
         // Update the space
         Provider.of<SpacesListModel>(context, listen: false).updateSpace(_space);
 
@@ -79,7 +79,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
   /// Add a collaborator to a space
   void _addCollaboratorToSpace(BuildContext context, String spaceId, String collaborator) {
-    widget.expensesTrackerApi.userSpaceApi.addUser(spaceId, collaborator).then((_) {
+    _expensesTrackerApi.userSpaceApi.addUser(spaceId, collaborator).then((_) {
       _space.collaborators.add(collaborator);
       setState(() {});
     });
@@ -87,7 +87,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
   /// Delete a collaborator from a space
   void _deleteCollaboratorFromSpace(BuildContext context, String spaceId, String collaborator) {
-    widget.expensesTrackerApi.userSpaceApi.deleteUser(spaceId, collaborator).then((_) {
+    _expensesTrackerApi.userSpaceApi.deleteUser(spaceId, collaborator).then((_) {
       _space.collaborators.remove(collaborator);
       setState(() {});
     });
@@ -104,21 +104,21 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
 
   /// Add a new category
   void _addCategoryToSpace(BuildContext context, String spaceId, String categoryTitle) {
-    widget.expensesTrackerApi.categoryApi.createCategory(spaceId, categoryTitle).then((category) {
+    _expensesTrackerApi.categoryApi.createCategory(spaceId, categoryTitle).then((category) {
       Provider.of<CategoriesListModel>(context, listen: false).addCategory(category);
     });
   }
 
   /// Delete a category
   void _deleteCategoryFromSpace(BuildContext context, String spaceId, String categoryId) {
-    widget.expensesTrackerApi.categoryApi.removeCategory(spaceId, categoryId).then((_) {
+    _expensesTrackerApi.categoryApi.removeCategory(spaceId, categoryId).then((_) {
       Provider.of<CategoriesListModel>(context, listen: false).removeCategoryById(categoryId);
     });
   }
 
   /// Quit a space
   void _onQuitSpace(BuildContext context, String spaceId) {
-    widget.expensesTrackerApi.userSpaceApi.quitSpace(spaceId).then((_) {
+    _expensesTrackerApi.userSpaceApi.quitSpace(spaceId).then((_) {
       Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(spaceId);
       Navigator.pop(context);
     }).catchError((err) => showErrorDialog(context, err));
@@ -142,11 +142,17 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
   Widget build(BuildContext context) {
     _loadSpaceFromRouteArgument(context);
 
+    // Get ExpensesTrackerApi from context
+    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Space"),
         actions: [
-          if (!isNewSpace)
+          if (!_isNewSpace)
             IconButton(
                 onPressed: () => setState(() => _showQrCode = false),
                 icon: const Icon(Icons.qr_code_rounded, color: Colors.white)),
@@ -161,7 +167,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
         child: Stack(children: [
           Column(
             children: [
-              !isNewSpace
+              !_isNewSpace
                   ? Row(
                       children: [
                         Expanded(
@@ -197,7 +203,7 @@ class _SpaceInformationScreenState extends State<SpaceInformationScreen> {
                   onDeleteCategory: _deleteCategoryFromSpace,
                 );
               }),
-              if (!isNewSpace)
+              if (!_isNewSpace)
                 ElevatedButton(
                   style: ButtonStyle(
                     side: MaterialStateProperty.all(

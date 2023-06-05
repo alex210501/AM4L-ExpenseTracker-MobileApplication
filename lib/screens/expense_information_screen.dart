@@ -7,14 +7,12 @@ import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/tools/general_tools.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
 
 class ExpenseInformationScreen extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
-
-  ExpenseInformationScreen({super.key, required this.expensesTrackerApi});
+  /// Constructor
+  const ExpenseInformationScreen({super.key});
 
   @override
   State<ExpenseInformationScreen> createState() => _ExpenseInformationScreenState();
@@ -39,11 +37,10 @@ class _ExpenseInformationScreenState extends State<ExpenseInformationScreen> {
   }
 
   void _onEdit(BuildContext context) async {
-    // Get the new expense
+    // Get the new expense from the modal output
     final updatedExpense = await showEditExpenseModal(
       context,
       _space,
-      widget.expensesTrackerApi,
       expenseId: _expenseId,
     );
 

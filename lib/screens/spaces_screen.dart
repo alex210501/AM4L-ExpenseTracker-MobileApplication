@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/category.dart';
-import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/fab_controller.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
@@ -14,21 +15,21 @@ import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart'
 import 'package:am4l_expensetracker_mobileapplication/widgets/expandable_vertical_fab.dart';
 
 class SpacesScreen extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
-
-  const SpacesScreen({super.key, required this.expensesTrackerApi});
+  /// Constructor
+  const SpacesScreen({super.key});
 
   @override
   State<SpacesScreen> createState() => _SpacesScreenState();
 }
 
 class _SpacesScreenState extends State<SpacesScreen> {
+  late ExpensesTrackerApi _expensesTrackerApi;
   final FabController _fabController = FabController();
 
   void _joinSpace(BuildContext context, String spaceId, {bool popContext = false}) {
-    widget.expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
+    _expensesTrackerApi.userSpaceApi.joinSpace(spaceId).then((_) {
       // Get information from the space joined
-      widget.expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
+      _expensesTrackerApi.spaceApi.getSpace(spaceId).then((newSpace) {
         Provider.of<SpacesListModel>(context, listen: false).addSpace(newSpace);
 
         // Close the dialog if variable popContext set
@@ -71,7 +72,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
   }
 
   _deleteSpace(BuildContext context, Space space) {
-    widget.expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
+    _expensesTrackerApi.spaceApi.deleteSpace(space.id).then((_) {
       // Get and update the SpacesListModel
       Provider.of<SpacesListModel>(context, listen: false).removeSpaceBySpaceID(space.id);
     }).catchError((err) => showErrorDialog(context, err));
@@ -101,6 +102,12 @@ class _SpacesScreenState extends State<SpacesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Get ExpensesTrackerApi from context
+    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Spaces'),
@@ -127,10 +134,7 @@ class _SpacesScreenState extends State<SpacesScreen> {
         child: Consumer<SpacesListModel>(builder: (context, cart, child) {
           return IgnorePointer(
             ignoring: _fabController.getState != null ? _fabController.getState!() : false,
-            child: _SpaceListView(
-              expensesTrackerApi: widget.expensesTrackerApi,
-              onDelete: (arg) => _deleteSpace(context, arg),
-            ),
+            child: _SpaceListView(onDelete: (arg) => _deleteSpace(context, arg)),
           );
         }),
       ),
@@ -138,22 +142,17 @@ class _SpacesScreenState extends State<SpacesScreen> {
   }
 }
 
-@immutable
 class _SpaceListView extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
   final void Function(Space) onDelete;
 
-  const _SpaceListView({
-    super.key,
-    required this.expensesTrackerApi,
-    required this.onDelete,
-  });
+  const _SpaceListView({required this.onDelete});
 
   @override
   State<_SpaceListView> createState() => _SpaceListViewState();
 }
 
 class _SpaceListViewState extends State<_SpaceListView> {
+  late ExpensesTrackerApi _expensesTrackerApi;
   bool _isLoading = false;
 
   void _setLoading(bool loadingMode) {
@@ -164,7 +163,8 @@ class _SpaceListViewState extends State<_SpaceListView> {
 
   /// Load categories from API
   Future<List<Category>> _loadCategories(BuildContext context, Space space) {
-    return widget.expensesTrackerApi.categoryApi.getCategories(space.id);
+    // Make request to get the categories
+    return _expensesTrackerApi.categoryApi.getCategories(space.id);
   }
 
   void _goToSpaceInfo(BuildContext context, Space space) {
@@ -180,7 +180,7 @@ class _SpaceListViewState extends State<_SpaceListView> {
   void _goToExpensesScreen(BuildContext context, Space space) {
     _setLoading(true);
 
-    widget.expensesTrackerApi.expenseApi.getExpenses(space.id).then((expenses) {
+    _expensesTrackerApi.expenseApi.getExpenses(space.id).then((expenses) {
       _setLoading(false);
 
       // Set the expenses
@@ -202,12 +202,18 @@ class _SpaceListViewState extends State<_SpaceListView> {
     final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
 
     // Add spaces to SpacesListModel
-    spacesListModel.setSpaces(await widget.expensesTrackerApi.spaceApi.getSpaces());
+    spacesListModel.setSpaces(await _expensesTrackerApi.spaceApi.getSpaces());
   }
 
   @override
   Widget build(BuildContext context) {
     final spaces = Provider.of<SpacesListModel>(context, listen: false).spaces;
+
+    // Get ExpensesTrackerApi from context
+    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
 
     return Center(
       child: RefreshIndicator(

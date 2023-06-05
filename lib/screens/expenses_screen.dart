@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/credentials_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/expense.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/space.dart';
 import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/edit_expense_modal.dart';
@@ -12,33 +13,35 @@ import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart'
 import 'package:am4l_expensetracker_mobileapplication/widgets/qrcode.dart';
 
 class ExpensesScreen extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
-
-  const ExpensesScreen({super.key, required this.expensesTrackerApi});
+  /// Constructor
+  const ExpensesScreen({super.key});
 
   @override
   State<ExpensesScreen> createState() => _ExpensesScreenState();
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
+  late ExpensesTrackerApi _expensesTrackerApi;
   bool _showQrCode = false;
   Space _space = Space.defaultValue();
 
   Future<void> _onRefresh(BuildContext context) async {
     final expensesListModel = Provider.of<ExpensesListModel>(context, listen: false);
 
-    // Get expenses from API
-    final expenses = await widget.expensesTrackerApi.expenseApi.getExpenses(_space.id);
+    try {
+      // Get expenses from API
+      final expenses = await _expensesTrackerApi.expenseApi.getExpenses(_space.id);
 
-    // Refresh expenses
-    expensesListModel.setExpenses(expenses);
-    widget.expensesTrackerApi.expenseApi.getExpenses(_space.id).then((expenses) {
-      ;
-    }).catchError((err) => showErrorDialog(context, err));
+      // Refresh expenses
+      expensesListModel.setExpenses(expenses);
+    } on Exception catch (e) {
+      showErrorDialog(context, e);
+    }
   }
 
   void _onDeleteExpense(BuildContext context, Expense expense) {
-    widget.expensesTrackerApi.expenseApi
+    /// Make request to delete expense
+    _expensesTrackerApi.expenseApi
         .deleteExpense(_space.id, expense.id)
         .then((_) => Provider.of<ExpensesListModel>(context).removeExpenseByID(expense.id))
         .catchError((err) => showErrorDialog(context, err));
@@ -47,6 +50,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     final spaceArg = ModalRoute.of(context)!.settings.arguments;
+
+    // Get ExpensesTrackerApi from context
+    _expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
 
     // Check if the space is passed as parameters, if not then return to the last screen
     if (spaceArg == null) {
@@ -68,7 +77,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
         return ExpensesBottomAppBar();
       }),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showEditExpenseModal(context, _space, widget.expensesTrackerApi),
+        onPressed: () => showEditExpenseModal(context, _space),
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

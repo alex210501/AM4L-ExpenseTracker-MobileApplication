@@ -4,15 +4,14 @@ import 'package:provider/provider.dart';
 
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/credentials_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_list_model.dart';
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/provider_models/spaces_list_model.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/api_loading_indicator.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 class LoginScreen extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
-
-  const LoginScreen({super.key, required this.expensesTrackerApi});
+  /// Constructor
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -33,6 +32,12 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login(BuildContext context) {
+    // Get ExpensesTrackerApi from context
+    final expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
+
     // Get the SpacesListModel from context
     final spacesListModel = Provider.of<SpacesListModel>(context, listen: false);
     final expensesListModel = Provider.of<ExpensesListModel>(context, listen: false);
@@ -52,9 +57,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text;
 
     // Make API request to login
-    widget.expensesTrackerApi.login(username, password).then((_) {
+    expensesTrackerApi.login(username, password).then((_) {
       // Refresh spaces
-      widget.expensesTrackerApi.spaceApi.getSpaces().then((spaces) {
+      expensesTrackerApi.spaceApi.getSpaces().then((spaces) {
         spacesListModel.setSpaces(spaces);
         Navigator.pushNamed(context, '/space');
 

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
+import 'package:am4l_expensetracker_mobileapplication/models/provider_models/expenses_tracker_api_model.dart';
 import 'package:am4l_expensetracker_mobileapplication/models/user.dart';
-import 'package:am4l_expensetracker_mobileapplication/services/api/expenses_tracker_api.dart';
 import 'package:am4l_expensetracker_mobileapplication/widgets/error_dialog.dart';
 
 class CreateUserScreen extends StatefulWidget {
-  final ExpensesTrackerApi expensesTrackerApi;
-
-  const CreateUserScreen({super.key, required this.expensesTrackerApi});
+  /// Constructor
+  const CreateUserScreen({super.key});
 
   @override
   State<CreateUserScreen> createState() => _CreateUserScreenState();
@@ -16,12 +17,17 @@ class CreateUserScreen extends StatefulWidget {
 class _CreateUserScreenState extends State<CreateUserScreen> {
   /// Create User
   _createUser(BuildContext context, User user, String password) {
-    widget.expensesTrackerApi.userApi
+    // Get the ExpensesTrackerApi from context
+    final expensesTrackerApi = Provider.of<ExpensesTrackerApiModel>(
+      context,
+      listen: false,
+    ).expensesTrackerApi;
+
+    // Make request to create user
+    expensesTrackerApi.userApi
         .createUser(user, password)
         .then((_) => Navigator.pushNamed(context, '/login'))
-        .catchError((err) {
-      showErrorDialog(context, err);
-    });
+        .catchError((err) => showErrorDialog(context, err));
   }
 
   /// On Sign In action
@@ -48,7 +54,6 @@ class _SignUpForm extends StatefulWidget {
   final void Function(BuildContext) onSignIn;
 
   const _SignUpForm({
-    super.key,
     required this.onCreate,
     required this.onSignIn,
   });
